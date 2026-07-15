@@ -3,19 +3,19 @@
     "KPlugin": {
         "Authors": [
             {
-                "Email": "info@agundur.de",
-                "Name": "Agundur"
+                "Name": "Agundur",
+                "Email": "info@agundur.de"
             }
         ],
-        "BugReportUrl": "https://github.com/Agundur-KDE/KDE-Plasma-Plasmoid-template/issues",
-        "Category": "Status Information",
-        "Description": "A skeleton to get you started building a Plasmoid",
-        "Icon": "kdesrc-build",
-        "Id": "de.agundur.myplasmoid",
+        "BugReportUrl": "https://github.com/Agundur-KDE/KHoneycomb/issues",
+        "Category": "Utilities",
+        "Description": "Draggable hexagonal desktop launcher icons",
+        "Icon": "input-gaming",
+        "Id": "de.agundur.khoneycomb",
         "License": "GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL",
-        "Name": "KDE-Template",
+        "Name": "KHoneycomb",
         "Version": "0.1",
-        "Website": "https://github.com/Agundur-KDE/KDE-Plasma-Plasmoid-template"
+        "Website": "https://github.com/Agundur-KDE/KHoneycomb"
     },
     "X-Plasma-API-Minimum-Version": "6.0"
 }

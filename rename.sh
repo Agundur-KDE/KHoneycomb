@@ -4,9 +4,9 @@
 
 set -euo pipefail
 
-OLD_ID="myplasmoid"
-OLD_DOMAIN="de.agundur.myplasmoid"
-OLD_NAME="KDE-Template"
+OLD_ID="khoneycomb"
+OLD_DOMAIN="de.agundur.khoneycomb"
+OLD_NAME="KHoneycomb"
 
 echo ""
 echo "=== KDE Plasmoid Template — rename ==="
