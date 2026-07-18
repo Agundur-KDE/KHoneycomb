@@ -23,8 +23,11 @@ PlasmoidItem {
     fullRepresentation: FullRepresentation {
         id: full
 
-        Layout.minimumWidth: full.hexWidth
-        Layout.minimumHeight: Plasmoid.configuration.hexSize
+        // Fixed to the configured size, not full.hexWidth/hexHeight — those
+        // now track the live (resized) box, and feeding them back into the
+        // resize constraint itself would risk a binding loop.
+        Layout.minimumWidth: Plasmoid.configuration.hexSize
+        Layout.minimumHeight: Math.round(Plasmoid.configuration.hexSize * full.hexRatio)
     }
 
     compactRepresentation: MouseArea {

@@ -13,20 +13,33 @@ import org.kde.plasma.plasma5support as Plasma5Support
 Item {
     id: full
 
-    readonly property int hexHeight: Plasmoid.configuration.hexSize
-    // Pointy-top hexagon: width/height ratio of a regular hexagon is sqrt(3)/2.
-    readonly property int hexWidth: Math.round(hexHeight * 0.8660254)
+    // Flat-top hexagon (the classic honeycomb-cell look): height/width
+    // ratio of a regular hexagon is sqrt(3)/2 — wider than tall.
+    readonly property real hexRatio: 0.8660254
 
-    implicitWidth: hexWidth
-    implicitHeight: hexHeight
+    // Largest correctly-proportioned hexagon that fits the actual box Plasma
+    // gives us. Desktop free-resize (right-click > Resize) sets width/height
+    // directly without preserving the ratio, so this must track the live
+    // size, not just the configured one — otherwise the mask and the resized
+    // box drift apart (missing corners, image not following the resize).
+    readonly property int hexWidth: width > 0 && height > 0
+        ? (height / hexRatio <= width ? Math.round(height / hexRatio) : width)
+        : Plasmoid.configuration.hexSize
+    readonly property int hexHeight: Math.round(hexWidth * hexRatio)
+    readonly property real hexOffsetX: (width - hexWidth) / 2
+    readonly property real hexOffsetY: (height - hexHeight) / 2
 
-    // Six vertices of a pointy-top regular hexagon, scaled to hexWidth x hexHeight.
-    function hexPoints(w, h) {
-        const cx = w / 2, cy = h / 2, r = h / 2
+    implicitWidth: Plasmoid.configuration.hexSize
+    implicitHeight: Math.round(Plasmoid.configuration.hexSize * hexRatio)
+
+    // Six vertices of a flat-top regular hexagon, scaled to w x h and
+    // offset by (ox, oy) to stay centered when it doesn't fill the box.
+    function hexPoints(w, h, ox, oy) {
+        const cx = ox + w / 2, cy = oy + h / 2, r = w / 2
         const pts = []
         for (let i = 0; i < 6; i++) {
-            const angle = (Math.PI / 180) * (60 * i - 90)
-            pts.push(Qt.point(cx + r * Math.cos(angle) * (w / h), cy + r * Math.sin(angle)))
+            const angle = (Math.PI / 180) * (60 * i)
+            pts.push(Qt.point(cx + r * Math.cos(angle), cy + r * Math.sin(angle) * (h / w)))
         }
         return pts
     }
@@ -65,10 +78,10 @@ Item {
         ShapePath {
             fillColor: "white"
             strokeColor: "transparent"
-            startX: full.hexPoints(full.hexWidth, full.hexHeight)[0].x
-            startY: full.hexPoints(full.hexWidth, full.hexHeight)[0].y
+            startX: full.hexPoints(full.hexWidth, full.hexHeight, full.hexOffsetX, full.hexOffsetY)[0].x
+            startY: full.hexPoints(full.hexWidth, full.hexHeight, full.hexOffsetX, full.hexOffsetY)[0].y
             PathPolyline {
-                path: full.hexPoints(full.hexWidth, full.hexHeight)
+                path: full.hexPoints(full.hexWidth, full.hexHeight, full.hexOffsetX, full.hexOffsetY)
             }
         }
     }
