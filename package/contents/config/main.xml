@@ -16,7 +16,7 @@
       <default>flat</default>
     </entry>
     <entry name="placeholderColor" type="Color">
-      <default>#3daee9</default>
+      <default>#ffd021</default>
     </entry>
   </group>
 </kcfg>
