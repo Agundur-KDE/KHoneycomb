@@ -75,7 +75,7 @@ Item {
         id: placeholder
 
         anchors.fill: parent
-        color: "#3daee9"
+        color: Plasmoid.configuration.placeholderColor
         opacity: 0
     }
 

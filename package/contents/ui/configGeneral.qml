@@ -16,6 +16,7 @@ KCM.SimpleKCM {
     property string cfg_command
     property int cfg_hexSize
     property string cfg_orientation
+    property color cfg_placeholderColor
 
     Kirigami.FormLayout {
         RowLayout {
@@ -55,6 +56,35 @@ KCM.SimpleKCM {
             currentIndex: cfg_orientation === "pointy" ? 1 : 0
             onActivated: cfg_orientation = currentIndex === 1 ? "pointy" : "flat"
         }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Placeholder color:")
+
+            Rectangle {
+                width: Kirigami.Units.gridUnit * 1.5
+                height: Kirigami.Units.gridUnit * 1.5
+                radius: 4
+                color: cfg_placeholderColor
+                border.color: Kirigami.Theme.disabledTextColor
+                border.width: 1
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: colorDialog.open()
+                }
+            }
+            QtControls.Button {
+                text: i18n("Choose…")
+                onClicked: colorDialog.open()
+            }
+        }
+    }
+
+    ColorDialog {
+        id: colorDialog
+        selectedColor: cfg_placeholderColor
+        onAccepted: cfg_placeholderColor = selectedColor
     }
 
     FileDialog {

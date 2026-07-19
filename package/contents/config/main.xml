@@ -15,5 +15,8 @@
     <entry name="orientation" type="String">
       <default>flat</default>
     </entry>
+    <entry name="placeholderColor" type="Color">
+      <default>#3daee9</default>
+    </entry>
   </group>
 </kcfg>
