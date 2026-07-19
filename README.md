@@ -1,5 +1,7 @@
 # KHoneycomb
 
+<p align="center"><img src="assets/logo.jpg" alt="KHoneycomb — honeycomb of honey-yellow hexagon tiles" width="600" /></p>
+
 Draggable hexagonal desktop launcher icons for KDE Plasma 6 — inspired by
 [this r/kde thread](https://www.reddit.com/r/kde/) where a Rainmeter-style
 GTK/Cairo hack didn't survive the move from Cinnamon to Plasma.
