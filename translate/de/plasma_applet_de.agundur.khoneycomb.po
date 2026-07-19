@@ -1,18 +1,65 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# German translation of khoneycomb.
+# Copyright (C) 2026 Agundur
+# This file is distributed under the same license as the khoneycomb package.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: plasma_applet_de.agundur.khoneycomb\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-01-01 00:00+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2026-07-19 00:00+0000\n"
+"Last-Translator: Agundur <info@agundur.de>\n"
 "Language-Team: German\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: package/contents/ui/main.qml:17
+msgid "KHoneycomb"
+msgstr "KHoneycomb"
+
+#: package/contents/ui/configGeneral.qml:23
+msgid "Icon image:"
+msgstr "Icon-Bild:"
+
+#: package/contents/ui/configGeneral.qml:37
+msgid "Command:"
+msgstr "Befehl:"
+
+#: package/contents/ui/configGeneral.qml:39
+msgid "e.g. firefox, or steam steam://open/main"
+msgstr "z. B. firefox oder steam steam://open/main"
+
+#: package/contents/ui/configGeneral.qml:45
+msgid "Size:"
+msgstr "Größe:"
+
+#: package/contents/ui/configGeneral.qml:54
+msgid "Orientation:"
+msgstr "Ausrichtung:"
+
+#: package/contents/ui/configGeneral.qml:55
+msgid "Flat-top"
+msgstr "Flach oben"
+
+#: package/contents/ui/configGeneral.qml:55
+msgid "Pointy-top"
+msgstr "Spitz oben"
+
+#: package/contents/ui/configGeneral.qml:61
+msgid "Placeholder color:"
+msgstr "Platzhalterfarbe:"
+
+#: package/contents/ui/configGeneral.qml:78
+msgid "Choose…"
+msgstr "Wählen…"
+
+#: package/contents/ui/configGeneral.qml:92
+msgid "Choose an icon image"
+msgstr "Icon-Bild auswählen"
+
+#: package/contents/ui/configGeneral.qml:93
+msgid "Images (*.png *.jpg *.jpeg *.webp *.svg)"
+msgstr "Bilder (*.png *.jpg *.jpeg *.webp *.svg)"
