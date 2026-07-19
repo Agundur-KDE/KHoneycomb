@@ -32,14 +32,17 @@ Item {
     implicitWidth: Plasmoid.configuration.hexSize
     implicitHeight: Math.round(Plasmoid.configuration.hexSize * hexRatio)
 
-    // Six vertices of a flat-top regular hexagon, scaled to w x h and
-    // offset by (ox, oy) to stay centered when it doesn't fill the box.
+    // Six vertices of a flat-top regular hexagon, offset by (ox, oy) to stay
+    // centered when it doesn't fill the box. w/h are always already in the
+    // correct hexRatio proportion (see hexHeight above), so placing vertices
+    // on a plain circle of radius w/2 already yields equal-length sides —
+    // no extra y-scaling needed (that would double-compress and distort it).
     function hexPoints(w, h, ox, oy) {
         const cx = ox + w / 2, cy = oy + h / 2, r = w / 2
         const pts = []
         for (let i = 0; i < 6; i++) {
             const angle = (Math.PI / 180) * (60 * i)
-            pts.push(Qt.point(cx + r * Math.cos(angle), cy + r * Math.sin(angle) * (h / w)))
+            pts.push(Qt.point(cx + r * Math.cos(angle), cy + r * Math.sin(angle)))
         }
         return pts
     }
