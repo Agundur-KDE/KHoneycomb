@@ -13,9 +13,11 @@ import org.kde.plasma.plasma5support as Plasma5Support
 Item {
     id: full
 
-    // Flat-top hexagon (the classic honeycomb-cell look): height/width
-    // ratio of a regular hexagon is sqrt(3)/2 — wider than tall.
+    // Ratio of the short side to the long side of a regular hexagon's
+    // bounding box is sqrt(3)/2 — flat-top is wider than tall, pointy-top
+    // is taller than wide, by exactly this factor either way.
     readonly property real hexRatio: 0.8660254
+    readonly property bool pointyTop: Plasmoid.configuration.orientation === "pointy"
 
     // Largest correctly-proportioned hexagon that fits the actual box Plasma
     // gives us. Desktop free-resize (right-click > Resize) sets width/height
@@ -23,25 +25,31 @@ Item {
     // size, not just the configured one — otherwise the mask and the resized
     // box drift apart (missing corners, image not following the resize).
     readonly property int hexWidth: width > 0 && height > 0
-        ? (height / hexRatio <= width ? Math.round(height / hexRatio) : width)
-        : Plasmoid.configuration.hexSize
-    readonly property int hexHeight: Math.round(hexWidth * hexRatio)
+        ? (pointyTop
+            ? Math.round(Math.min(width, height * hexRatio))
+            : Math.min(Math.round(height / hexRatio), width))
+        : (pointyTop ? Math.round(Plasmoid.configuration.hexSize * hexRatio) : Plasmoid.configuration.hexSize)
+    readonly property int hexHeight: pointyTop
+        ? Math.round(hexWidth / hexRatio)
+        : Math.round(hexWidth * hexRatio)
     readonly property real hexOffsetX: (width - hexWidth) / 2
     readonly property real hexOffsetY: (height - hexHeight) / 2
 
-    implicitWidth: Plasmoid.configuration.hexSize
-    implicitHeight: Math.round(Plasmoid.configuration.hexSize * hexRatio)
+    implicitWidth: pointyTop ? Math.round(Plasmoid.configuration.hexSize * hexRatio) : Plasmoid.configuration.hexSize
+    implicitHeight: pointyTop ? Plasmoid.configuration.hexSize : Math.round(Plasmoid.configuration.hexSize * hexRatio)
 
-    // Six vertices of a flat-top regular hexagon, offset by (ox, oy) to stay
-    // centered when it doesn't fill the box. w/h are always already in the
-    // correct hexRatio proportion (see hexHeight above), so placing vertices
-    // on a plain circle of radius w/2 already yields equal-length sides —
-    // no extra y-scaling needed (that would double-compress and distort it).
+    // Six vertices of a regular hexagon, offset by (ox, oy) to stay centered
+    // when it doesn't fill the box. w/h are always already in the correct
+    // hexRatio proportion (see hexHeight above), so placing vertices on a
+    // plain circle at 60° steps already yields equal-length sides — no extra
+    // axis-scaling needed (that would distort it). Flat-top starts the first
+    // vertex at 0° (pointing right); pointy-top starts at -90° (pointing up).
     function hexPoints(w, h, ox, oy) {
-        const cx = ox + w / 2, cy = oy + h / 2, r = w / 2
+        const cx = ox + w / 2, cy = oy + h / 2, r = pointyTop ? h / 2 : w / 2
+        const startAngle = pointyTop ? -90 : 0
         const pts = []
         for (let i = 0; i < 6; i++) {
-            const angle = (Math.PI / 180) * (60 * i)
+            const angle = (Math.PI / 180) * (startAngle + 60 * i)
             pts.push(Qt.point(cx + r * Math.cos(angle), cy + r * Math.sin(angle)))
         }
         return pts

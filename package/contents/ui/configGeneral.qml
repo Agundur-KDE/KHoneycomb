@@ -15,6 +15,7 @@ KCM.SimpleKCM {
     property string cfg_imagePath
     property string cfg_command
     property int cfg_hexSize
+    property string cfg_orientation
 
     Kirigami.FormLayout {
         RowLayout {
@@ -46,6 +47,13 @@ KCM.SimpleKCM {
             stepSize: 10
             value: cfg_hexSize
             onValueModified: cfg_hexSize = value
+        }
+
+        QtControls.ComboBox {
+            Kirigami.FormData.label: i18n("Orientation:")
+            model: [i18n("Flat-top"), i18n("Pointy-top")]
+            currentIndex: cfg_orientation === "pointy" ? 1 : 0
+            onActivated: cfg_orientation = currentIndex === 1 ? "pointy" : "flat"
         }
     }
 
