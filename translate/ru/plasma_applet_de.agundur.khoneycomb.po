@@ -1,0 +1,65 @@
+# Russian translation of khoneycomb.
+# Copyright (C) 2026 Agundur
+# This file is distributed under the same license as the khoneycomb package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: plasma_applet_de.agundur.khoneycomb\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-01 00:00+0000\n"
+"PO-Revision-Date: 2026-07-19 00:00+0000\n"
+"Last-Translator: Agundur <info@agundur.de>\n"
+"Language-Team: Russian\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: package/contents/ui/main.qml:17
+msgid "KHoneycomb"
+msgstr "KHoneycomb"
+
+#: package/contents/ui/configGeneral.qml:23
+msgid "Icon image:"
+msgstr "Изображение значка:"
+
+#: package/contents/ui/configGeneral.qml:37
+msgid "Command:"
+msgstr "Команда:"
+
+#: package/contents/ui/configGeneral.qml:39
+msgid "e.g. firefox, or steam steam://open/main"
+msgstr "например, firefox или steam steam://open/main"
+
+#: package/contents/ui/configGeneral.qml:45
+msgid "Size:"
+msgstr "Размер:"
+
+#: package/contents/ui/configGeneral.qml:54
+msgid "Orientation:"
+msgstr "Ориентация:"
+
+#: package/contents/ui/configGeneral.qml:55
+msgid "Flat-top"
+msgstr "Плоская вершина"
+
+#: package/contents/ui/configGeneral.qml:55
+msgid "Pointy-top"
+msgstr "Острая вершина"
+
+#: package/contents/ui/configGeneral.qml:61
+msgid "Placeholder color:"
+msgstr "Цвет заполнителя:"
+
+#: package/contents/ui/configGeneral.qml:78
+msgid "Choose…"
+msgstr "Выбрать…"
+
+#: package/contents/ui/configGeneral.qml:92
+msgid "Choose an icon image"
+msgstr "Выбрать изображение значка"
+
+#: package/contents/ui/configGeneral.qml:93
+msgid "Images (*.png *.jpg *.jpeg *.webp *.svg)"
+msgstr "Изображения (*.png *.jpg *.jpeg *.webp *.svg)"
