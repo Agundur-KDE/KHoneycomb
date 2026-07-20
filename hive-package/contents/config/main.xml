@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0       http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+  <kcfgfile name=""/>
+  <group name="General">
+    <entry name="hexSize" type="Int">
+      <default>90</default>
+      <min>40</min>
+    </entry>
+    <entry name="columns" type="Int">
+      <default>3</default>
+      <min>1</min>
+    </entry>
+    <entry name="spacing" type="Int">
+      <default>5</default>
+      <min>0</min>
+    </entry>
+    <entry name="orientation" type="String">
+      <default>flat</default>
+    </entry>
+    <entry name="placeholderColor" type="Color">
+      <default>#ffd021</default>
+    </entry>
+    <!-- JSON array of {image, command}, e.g. [{"image":"","command":"firefox"}] -->
+    <entry name="slots" type="String">
+      <default>[]</default>
+    </entry>
+  </group>
+</kcfg>

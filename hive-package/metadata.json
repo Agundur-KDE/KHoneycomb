@@ -1,0 +1,21 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Agundur",
+                "Email": "info@agundur.de"
+            }
+        ],
+        "BugReportUrl": "https://github.com/Agundur-KDE/KHoneycomb/issues",
+        "Category": "Utilities",
+        "Description": "A single-widget honeycomb of launcher slots, tiled edge-to-edge",
+        "Icon": "input-gaming",
+        "Id": "de.agundur.khivelaunch",
+        "License": "GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL",
+        "Name": "KHiveLaunch",
+        "Version": "0.1",
+        "Website": "https://github.com/Agundur-KDE/KHoneycomb"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}
