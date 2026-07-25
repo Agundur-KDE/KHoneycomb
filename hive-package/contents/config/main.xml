@@ -6,9 +6,10 @@
       <default>90</default>
       <min>40</min>
     </entry>
+    <!-- 0 = auto columns, fits current widget width/height ratio -->
     <entry name="columns" type="Int">
-      <default>3</default>
-      <min>1</min>
+      <default>0</default>
+      <min>0</min>
     </entry>
     <entry name="spacing" type="Int">
       <default>5</default>

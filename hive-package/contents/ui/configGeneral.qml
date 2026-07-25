@@ -60,10 +60,12 @@ KCM.SimpleKCM {
 
         QtControls.SpinBox {
             Kirigami.FormData.label: i18n("Columns:")
-            from: 1
+            from: 0
             to: 20
             value: cfg_columns
             onValueModified: cfg_columns = value
+            QtControls.ToolTip.visible: hovered
+            QtControls.ToolTip.text: i18n("0 = automatic, fits the widget's current shape")
         }
 
         QtControls.SpinBox {

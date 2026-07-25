@@ -26,9 +26,54 @@ Item {
     readonly property int hexSize: Plasmoid.configuration.hexSize
     readonly property int hexW: pointyTop ? Math.round(hexSize * hexRatio) : hexSize
     readonly property int hexH: pointyTop ? hexSize : Math.round(hexSize * hexRatio)
-    readonly property int columns: Math.max(1, Plasmoid.configuration.columns)
+    // columns setting: 0 = auto (pick whatever column count best matches
+    // the widget's current width/height ratio, so dragging wide -> more
+    // columns/fewer rows and dragging tall -> fewer columns/more rows),
+    // >0 = fixed override, same as before.
+    readonly property int columns: Plasmoid.configuration.columns > 0
+        ? Plasmoid.configuration.columns
+        : full.bestColumns()
 
     property var slotList: []
+
+    // Same offset-grid extent math as gridWidth/gridHeight below, but for
+    // a hypothetical column count c instead of the live full.columns -
+    // used to score candidates in bestColumns() without a binding loop.
+    function gridExtentFor(c) {
+        const spacing = Plasmoid.configuration.spacing
+        const r = hexSize / 2
+        const colStep = 1.5 * r + spacing
+        const rowStep = hexRatio * hexSize + spacing
+        let maxX = 0, maxY = 0
+        for (let i = 0; i < slotList.length; i++) {
+            const col = i % c
+            const row = Math.floor(i / c)
+            const lx = col * colStep
+            const ly = row * rowStep + (col % 2 === 1 ? rowStep / 2 : 0)
+            maxX = Math.max(maxX, lx + hexW)
+            maxY = Math.max(maxY, ly + hexH)
+        }
+        const w = Math.max(hexW, Math.round(maxX))
+        const h = Math.max(hexH, Math.round(maxY))
+        return pointyTop ? Qt.point(h, w) : Qt.point(w, h)
+    }
+
+    function bestColumns() {
+        const n = slotList.length
+        if (n <= 1) return 1
+        // No live size yet (not placed/resized): fall back to a roughly
+        // square arrangement instead of reading full.width/height, which
+        // would still be 0 at this point.
+        if (full.width <= 0 || full.height <= 0) return Math.max(1, Math.round(Math.sqrt(n)))
+        const targetRatio = full.width / full.height
+        let bestC = 1, bestDiff = Infinity
+        for (let c = 1; c <= n; c++) {
+            const ext = full.gridExtentFor(c)
+            const diff = Math.abs(ext.x / ext.y - targetRatio)
+            if (diff < bestDiff) { bestDiff = diff; bestC = c }
+        }
+        return bestC
+    }
 
     function reloadSlots() {
         try {
