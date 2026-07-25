@@ -182,6 +182,33 @@ Item {
         Plasmoid.configuration.slots = JSON.stringify(arr)
     }
 
+    // Drag-to-reorder: dropX/dropY are the dragged cell's raw position in
+    // grid-local coordinates (same space slotPos() works in) at release —
+    // find whichever slot's normal position is closest to that point and
+    // move the dragged slot there (list move, not a straight swap, so the
+    // rest shift over like reordering a list). Writing back to
+    // configuration.slots reassigns slotList, which the Repeater treats as
+    // a fresh model, so every delegate (including the dragged one) gets its
+    // x/y binding re-established automatically — no manual Qt.binding()
+    // restore needed after the imperative drag.
+    function dropSlot(fromIndex, dropX, dropY) {
+        const dc = Qt.point(dropX + full.hexW / 2, dropY + full.hexH / 2)
+        let nearest = fromIndex, nearestDist = Infinity
+        for (let i = 0; i < full.slotList.length; i++) {
+            const p = full.slotPos(i)
+            const dx = p.x + full.hexW / 2 - dc.x
+            const dy = p.y + full.hexH / 2 - dc.y
+            const dist = dx * dx + dy * dy
+            if (dist < nearestDist) { nearestDist = dist; nearest = i }
+        }
+        if (nearest === fromIndex)
+            return
+        const arr = JSON.parse(JSON.stringify(full.slotList))
+        const moved = arr.splice(fromIndex, 1)[0]
+        arr.splice(nearest, 0, moved)
+        Plasmoid.configuration.slots = JSON.stringify(arr)
+    }
+
     QtControls.Popup {
         id: slotEditPopup
         property int targetIndex: -1
@@ -431,6 +458,20 @@ Item {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    drag.axis: Drag.XAndYAxis
+                    // Only left-button presses drag — a right-press never
+                    // sets a drag.target, so right-click still opens the
+                    // editor untouched. QtQuick already skips onClicked
+                    // when a real drag happened, so left-click-to-launch
+                    // and drag-to-reorder don't fight over the same button.
+                    onPressed: (mouse) => {
+                        drag.target = mouse.button === Qt.LeftButton ? slot : null
+                    }
+                    onReleased: {
+                        if (drag.active)
+                            full.dropSlot(slot.index, slot.x, slot.y)
+                        drag.target = null
+                    }
                     onClicked: (mouse) => {
                         if (mouse.button === Qt.RightButton) {
                             full.openSlotEditor(slot.index)
