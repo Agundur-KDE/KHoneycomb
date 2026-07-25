@@ -5,6 +5,7 @@
  */
 
 import QtQuick
+import QtQuick.Window
 import QtQuick.Controls as QtControls
 import QtQuick.Dialogs
 import QtQuick.Layouts
@@ -267,7 +268,7 @@ Item {
                 QtControls.Slider {
                     id: slotEditZoom
                     Layout.fillWidth: true
-                    from: 100
+                    from: 40
                     to: 300
                     stepSize: 10
                 }
@@ -410,6 +411,11 @@ Item {
                     opacity: 0
                     layer.enabled: true
                     layer.smooth: true
+                    // layer textures snapshot at this item's native pixel size;
+                    // the whole grid gets scaled up afterwards by renderScale
+                    // (see gridWrapper), so without this the mask/bevel/icon
+                    // textures get blurrily stretched right along with it.
+                    layer.textureSize: Qt.size(Math.round(width * full.renderScale * Screen.devicePixelRatio), Math.round(height * full.renderScale * Screen.devicePixelRatio))
                     ShapePath {
                         fillColor: "white"
                         strokeColor: "transparent"
@@ -434,6 +440,7 @@ Item {
                     opacity: 0
                     layer.enabled: true
                     layer.smooth: true
+                    layer.textureSize: Qt.size(Math.round(width * full.renderScale * Screen.devicePixelRatio), Math.round(height * full.renderScale * Screen.devicePixelRatio))
                     source: iconContent
                     maskEnabled: true
                     maskSource: hexMask

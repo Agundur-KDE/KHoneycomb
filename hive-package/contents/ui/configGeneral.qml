@@ -178,13 +178,13 @@ KCM.SimpleKCM {
                         onEditingFinished: { slotModel.setProperty(index, "command", text); root.save() }
                     }
                     QtControls.SpinBox {
-                        from: 100
+                        from: 40
                         to: 300
                         stepSize: 10
                         value: zoom
                         onValueModified: { slotModel.setProperty(index, "zoom", value); root.save() }
                         QtControls.ToolTip.visible: hovered
-                        QtControls.ToolTip.text: i18n("Zoom %, crops in on images with a lot of transparent padding")
+                        QtControls.ToolTip.text: i18n("Zoom %, crops in on images with a lot of transparent padding, or shrinks below 100% for images with none")
                     }
                     Rectangle {
                         width: Kirigami.Units.gridUnit * 1.2
