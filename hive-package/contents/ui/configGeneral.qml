@@ -35,7 +35,7 @@ KCM.SimpleKCM {
         }
         slotModel.clear()
         for (const s of parsed)
-            slotModel.append({ image: s.image || "", command: s.command || "" })
+            slotModel.append({ image: s.image || "", command: s.command || "", zoom: s.zoom || 100 })
     }
     Component.onCompleted: load()
 
@@ -43,7 +43,7 @@ KCM.SimpleKCM {
         const arr = []
         for (let i = 0; i < slotModel.count; i++) {
             const item = slotModel.get(i)
-            arr.push({ image: item.image, command: item.command })
+            arr.push({ image: item.image, command: item.command, zoom: item.zoom })
         }
         cfg_slots = JSON.stringify(arr)
     }
@@ -119,6 +119,7 @@ KCM.SimpleKCM {
                     required property int index
                     required property string image
                     required property string command
+                    required property int zoom
 
                     Layout.fillWidth: true
 
@@ -140,6 +141,15 @@ KCM.SimpleKCM {
                         placeholderText: i18n("Command")
                         text: command
                         onEditingFinished: { slotModel.setProperty(index, "command", text); root.save() }
+                    }
+                    QtControls.SpinBox {
+                        from: 100
+                        to: 300
+                        stepSize: 10
+                        value: zoom
+                        onValueModified: { slotModel.setProperty(index, "zoom", value); root.save() }
+                        QtControls.ToolTip.visible: hovered
+                        QtControls.ToolTip.text: i18n("Zoom %, crops in on images with a lot of transparent padding")
                     }
                     QtControls.Button {
                         icon.name: "go-up"
@@ -170,7 +180,7 @@ KCM.SimpleKCM {
                     icon.name: "list-add"
                     onClicked: {
                         for (let i = 0; i < addCountSpin.value; i++)
-                            slotModel.append({ image: "", command: "" })
+                            slotModel.append({ image: "", command: "", zoom: 100 })
                         root.save()
                     }
                 }

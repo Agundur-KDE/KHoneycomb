@@ -154,18 +154,19 @@ Item {
     // edit (removing/reordering slots) stays in the full config dialog,
     // this is just the quick "change what this one cell launches" path.
     function openSlotEditor(index) {
-        const s = full.slotList[index] || { image: "", command: "" }
+        const s = full.slotList[index] || { image: "", command: "", zoom: 100 }
         slotEditPopup.targetIndex = index
         slotEditImage.text = s.image || ""
         slotEditCommand.text = s.command || ""
+        slotEditZoom.value = s.zoom || 100
         slotEditPopup.open()
     }
 
-    function writeSlot(index, image, command) {
+    function writeSlot(index, image, command, zoom) {
         const arr = JSON.parse(JSON.stringify(full.slotList))
         if (index < 0 || index >= arr.length)
             return
-        arr[index] = { image: image, command: command }
+        arr[index] = { image: image, command: command, zoom: zoom || 100 }
         Plasmoid.configuration.slots = JSON.stringify(arr)
     }
 
@@ -195,17 +196,28 @@ Item {
                 placeholderText: i18n("Command")
             }
             RowLayout {
+                QtControls.Label { text: i18n("Zoom:") }
+                QtControls.Slider {
+                    id: slotEditZoom
+                    Layout.fillWidth: true
+                    from: 100
+                    to: 300
+                    stepSize: 10
+                }
+                QtControls.Label { text: Math.round(slotEditZoom.value) + "%" }
+            }
+            RowLayout {
                 QtControls.Button {
                     text: i18n("Save")
                     onClicked: {
-                        full.writeSlot(slotEditPopup.targetIndex, slotEditImage.text, slotEditCommand.text)
+                        full.writeSlot(slotEditPopup.targetIndex, slotEditImage.text, slotEditCommand.text, slotEditZoom.value)
                         slotEditPopup.close()
                     }
                 }
                 QtControls.Button {
                     text: i18n("Clear")
                     onClicked: {
-                        full.writeSlot(slotEditPopup.targetIndex, "", "")
+                        full.writeSlot(slotEditPopup.targetIndex, "", "", 100)
                         slotEditPopup.close()
                     }
                 }
@@ -246,15 +258,27 @@ Item {
                 width: full.hexW
                 height: full.hexH
 
-                Image {
-                    id: icon
+                // Zoom lets an image with a lot of transparent padding
+                // around the actual artwork (typical for 512x512 system
+                // icons) be cropped in on its center to fill the hex — the
+                // outer Item stays fixed size and clips, so the Image can
+                // be scaled up past it without spilling into neighbors.
+                Item {
+                    id: iconClip
                     anchors.fill: parent
-                    fillMode: Image.PreserveAspectCrop
-                    source: slot.modelData.image || ""
-                    smooth: true
-                    mipmap: true
+                    clip: true
                     opacity: 0
-                    asynchronous: true
+
+                    Image {
+                        id: icon
+                        anchors.fill: parent
+                        fillMode: Image.PreserveAspectCrop
+                        source: slot.modelData.image || ""
+                        smooth: true
+                        mipmap: true
+                        asynchronous: true
+                        scale: (slot.modelData.zoom || 100) / 100
+                    }
                 }
 
                 Rectangle {
@@ -294,7 +318,7 @@ Item {
                     opacity: 0
                     layer.enabled: true
                     layer.smooth: true
-                    source: icon.status === Image.Ready ? icon : placeholder
+                    source: icon.status === Image.Ready ? iconClip : placeholder
                     maskEnabled: true
                     maskSource: hexMask
                     maskThresholdMin: 0.5
