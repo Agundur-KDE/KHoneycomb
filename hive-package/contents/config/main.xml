@@ -21,7 +21,16 @@
     <entry name="placeholderColor" type="Color">
       <default>#ffd021</default>
     </entry>
-    <!-- JSON array of {image, command}, e.g. [{"image":"","command":"firefox"}] -->
+    <entry name="textColor" type="Color">
+      <default>#000000</default>
+    </entry>
+    <entry name="textSize" type="Int">
+      <default>14</default>
+      <min>6</min>
+    </entry>
+    <!-- JSON array of {image, command, zoom, color}, e.g.
+         [{"image":"","command":"firefox","zoom":100,"color":""}] —
+         zoom 100 = no crop, color "" = inherit placeholderColor -->
     <entry name="slots" type="String">
       <default>[]</default>
     </entry>

@@ -19,6 +19,8 @@ KCM.SimpleKCM {
     property int cfg_spacing
     property string cfg_orientation
     property color cfg_placeholderColor
+    property color cfg_textColor
+    property int cfg_textSize
     property string cfg_slots
 
     // Slot list is edited via this model, then serialized back to
@@ -35,7 +37,7 @@ KCM.SimpleKCM {
         }
         slotModel.clear()
         for (const s of parsed)
-            slotModel.append({ image: s.image || "", command: s.command || "", zoom: s.zoom || 100 })
+            slotModel.append({ image: s.image || "", command: s.command || "", zoom: s.zoom || 100, color: s.color || "" })
     }
     Component.onCompleted: load()
 
@@ -43,7 +45,7 @@ KCM.SimpleKCM {
         const arr = []
         for (let i = 0; i < slotModel.count; i++) {
             const item = slotModel.get(i)
-            arr.push({ image: item.image, command: item.command, zoom: item.zoom })
+            arr.push({ image: item.image, command: item.command, zoom: item.zoom, color: item.color })
         }
         cfg_slots = JSON.stringify(arr)
     }
@@ -104,6 +106,37 @@ KCM.SimpleKCM {
             }
         }
 
+        QtControls.SpinBox {
+            Kirigami.FormData.label: i18n("Fallback text size:")
+            from: 6
+            to: 60
+            value: cfg_textSize
+            onValueModified: cfg_textSize = value
+            QtControls.ToolTip.visible: hovered
+            QtControls.ToolTip.text: i18n("Used for slots with a command but no icon image")
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Fallback text color:")
+            Rectangle {
+                width: Kirigami.Units.gridUnit * 1.5
+                height: Kirigami.Units.gridUnit * 1.5
+                radius: 4
+                color: cfg_textColor
+                border.color: Kirigami.Theme.disabledTextColor
+                border.width: 1
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: textColorDialog.open()
+                }
+            }
+            QtControls.Button {
+                text: i18n("Choose…")
+                onClicked: textColorDialog.open()
+            }
+        }
+
         Kirigami.Separator {
             Kirigami.FormData.isSection: true
             Kirigami.FormData.label: i18n("Slots")
@@ -116,10 +149,12 @@ KCM.SimpleKCM {
                 model: slotModel
 
                 RowLayout {
+                    id: slotRow
                     required property int index
                     required property string image
                     required property string command
                     required property int zoom
+                    required property string color
 
                     Layout.fillWidth: true
 
@@ -151,6 +186,23 @@ KCM.SimpleKCM {
                         QtControls.ToolTip.visible: hovered
                         QtControls.ToolTip.text: i18n("Zoom %, crops in on images with a lot of transparent padding")
                     }
+                    Rectangle {
+                        width: Kirigami.Units.gridUnit * 1.2
+                        height: Kirigami.Units.gridUnit * 1.2
+                        radius: 4
+                        color: slotRow.color ? slotRow.color : cfg_placeholderColor
+                        border.color: Kirigami.Theme.disabledTextColor
+                        border.width: 1
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                slotColorDialog.targetIndex = slotRow.index
+                                slotColorDialog.selectedColor = slotRow.color ? slotRow.color : cfg_placeholderColor
+                                slotColorDialog.open()
+                            }
+                        }
+                    }
                     QtControls.Button {
                         icon.name: "go-up"
                         enabled: index > 0
@@ -180,7 +232,7 @@ KCM.SimpleKCM {
                     icon.name: "list-add"
                     onClicked: {
                         for (let i = 0; i < addCountSpin.value; i++)
-                            slotModel.append({ image: "", command: "", zoom: 100 })
+                            slotModel.append({ image: "", command: "", zoom: 100, color: "" })
                         root.save()
                     }
                 }
@@ -191,7 +243,26 @@ KCM.SimpleKCM {
     ColorDialog {
         id: colorDialog
         selectedColor: cfg_placeholderColor
+        options: ColorDialog.ShowAlphaChannel
         onAccepted: cfg_placeholderColor = selectedColor
+    }
+
+    ColorDialog {
+        id: textColorDialog
+        selectedColor: cfg_textColor
+        onAccepted: cfg_textColor = selectedColor
+    }
+
+    ColorDialog {
+        id: slotColorDialog
+        property int targetIndex: -1
+        options: ColorDialog.ShowAlphaChannel
+        onAccepted: {
+            if (targetIndex >= 0) {
+                slotModel.setProperty(targetIndex, "color", selectedColor.toString())
+                root.save()
+            }
+        }
     }
 
     FileDialog {

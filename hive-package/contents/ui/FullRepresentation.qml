@@ -12,6 +12,7 @@ import QtQuick.Shapes
 import QtQuick.Effects
 import org.kde.plasma.plasmoid
 import org.kde.plasma.plasma5support as Plasma5Support
+import org.kde.kirigami as Kirigami
 
 Item {
     id: full
@@ -132,6 +133,16 @@ Item {
         ? Math.min(width / gridWidth, height / gridHeight)
         : 1
 
+    // Fallback label when a slot has a command but no icon image — first
+    // word of the command, path stripped, capitalized.
+    function labelFor(command) {
+        if (!command)
+            return ""
+        let first = command.trim().split(/\s+/)[0]
+        first = first.split("/").pop()
+        return first.length ? first.charAt(0).toUpperCase() + first.slice(1) : ""
+    }
+
     function hexPoints(w, h, ox, oy) {
         const cx = ox + w / 2, cy = oy + h / 2, r = pointyTop ? h / 2 : w / 2
         const startAngle = pointyTop ? -90 : 0
@@ -154,31 +165,60 @@ Item {
     // edit (removing/reordering slots) stays in the full config dialog,
     // this is just the quick "change what this one cell launches" path.
     function openSlotEditor(index) {
-        const s = full.slotList[index] || { image: "", command: "", zoom: 100 }
+        const s = full.slotList[index] || { image: "", command: "", zoom: 100, color: "" }
         slotEditPopup.targetIndex = index
         slotEditImage.text = s.image || ""
         slotEditCommand.text = s.command || ""
         slotEditZoom.value = s.zoom || 100
+        slotEditPopup.slotColor = s.color || ""
         slotEditPopup.open()
     }
 
-    function writeSlot(index, image, command, zoom) {
+    function writeSlot(index, image, command, zoom, color) {
         const arr = JSON.parse(JSON.stringify(full.slotList))
         if (index < 0 || index >= arr.length)
             return
-        arr[index] = { image: image, command: command, zoom: zoom || 100 }
+        arr[index] = { image: image, command: command, zoom: zoom || 100, color: color || "" }
         Plasmoid.configuration.slots = JSON.stringify(arr)
     }
 
     QtControls.Popup {
         id: slotEditPopup
         property int targetIndex: -1
+        property string slotColor: ""
         modal: true
         focus: true
         x: (full.width - width) / 2
         y: (full.height - height) / 2
 
         ColumnLayout {
+            // Drag handle: popup starts centered on the clicked hex, but
+            // stays wherever you drag it to — including across edits of
+            // other slots — so it doesn't have to be moved out of the way
+            // over and over while working through several cells.
+            MouseArea {
+                Layout.fillWidth: true
+                Layout.preferredHeight: dragLabel.implicitHeight
+                cursorShape: Qt.SizeAllCursor
+                property point startMouse
+                property point startPopup
+                onPressed: (mouse) => {
+                    startMouse = Qt.point(mouse.x, mouse.y)
+                    startPopup = Qt.point(slotEditPopup.x, slotEditPopup.y)
+                }
+                onPositionChanged: (mouse) => {
+                    if (pressed) {
+                        slotEditPopup.x = startPopup.x + (mouse.x - startMouse.x)
+                        slotEditPopup.y = startPopup.y + (mouse.y - startMouse.y)
+                    }
+                }
+                QtControls.Label {
+                    id: dragLabel
+                    anchors.centerIn: parent
+                    text: "⠿ " + i18n("Edit hexagon") + " ⠿"
+                    opacity: 0.7
+                }
+            }
             RowLayout {
                 QtControls.TextField {
                     id: slotEditImage
@@ -207,22 +247,40 @@ Item {
                 QtControls.Label { text: Math.round(slotEditZoom.value) + "%" }
             }
             RowLayout {
+                QtControls.Label { text: i18n("Color:") }
+                Rectangle {
+                    width: Kirigami.Units.gridUnit * 1.5
+                    height: Kirigami.Units.gridUnit * 1.5
+                    radius: 4
+                    color: slotEditPopup.slotColor || Plasmoid.configuration.placeholderColor
+                    border.color: "#80808080"
+                    border.width: 1
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: slotEditColorDialog.open()
+                    }
+                }
+                QtControls.Button {
+                    text: i18n("Transparent")
+                    onClicked: slotEditPopup.slotColor = "#00000000"
+                }
+                QtControls.Button {
+                    text: i18n("Default")
+                    onClicked: slotEditPopup.slotColor = ""
+                }
+            }
+            RowLayout {
                 QtControls.Button {
                     text: i18n("Save")
-                    onClicked: {
-                        full.writeSlot(slotEditPopup.targetIndex, slotEditImage.text, slotEditCommand.text, slotEditZoom.value)
-                        slotEditPopup.close()
-                    }
+                    onClicked: full.writeSlot(slotEditPopup.targetIndex, slotEditImage.text, slotEditCommand.text, slotEditZoom.value, slotEditPopup.slotColor)
                 }
                 QtControls.Button {
                     text: i18n("Clear")
-                    onClicked: {
-                        full.writeSlot(slotEditPopup.targetIndex, "", "", 100)
-                        slotEditPopup.close()
-                    }
+                    onClicked: full.writeSlot(slotEditPopup.targetIndex, "", "", 100, "")
                 }
                 QtControls.Button {
-                    text: i18n("Cancel")
+                    text: i18n("Close")
                     onClicked: slotEditPopup.close()
                 }
             }
@@ -233,6 +291,13 @@ Item {
             title: i18n("Choose an icon image")
             nameFilters: [i18n("Images (*.png *.jpg *.jpeg *.webp *.svg)")]
             onAccepted: slotEditImage.text = selectedFile.toString().replace("file://", "")
+        }
+
+        ColorDialog {
+            id: slotEditColorDialog
+            selectedColor: slotEditPopup.slotColor || Plasmoid.configuration.placeholderColor
+            options: ColorDialog.ShowAlphaChannel
+            onAccepted: slotEditPopup.slotColor = selectedColor.toString()
         }
     }
 
@@ -258,34 +323,58 @@ Item {
                 width: full.hexW
                 height: full.hexH
 
-                // Zoom lets an image with a lot of transparent padding
-                // around the actual artwork (typical for 512x512 system
-                // icons) be cropped in on its center to fill the hex — the
-                // outer Item stays fixed size and clips, so the Image can
-                // be scaled up past it without spilling into neighbors.
+                // Placeholder color always sits behind the icon (not just
+                // when there's no image) so an image's transparent parts —
+                // corners left over after zoom, round logos, etc — show the
+                // configured color instead of raw desktop background. Pick
+                // an alpha-0 color in the config to turn this off.
                 Item {
-                    id: iconClip
+                    id: iconContent
                     anchors.fill: parent
-                    clip: true
                     opacity: 0
 
-                    Image {
-                        id: icon
+                    Rectangle {
+                        id: placeholder
                         anchors.fill: parent
-                        fillMode: Image.PreserveAspectCrop
-                        source: slot.modelData.image || ""
-                        smooth: true
-                        mipmap: true
-                        asynchronous: true
-                        scale: (slot.modelData.zoom || 100) / 100
+                        color: slot.modelData.color || Plasmoid.configuration.placeholderColor
                     }
-                }
 
-                Rectangle {
-                    id: placeholder
-                    anchors.fill: parent
-                    color: Plasmoid.configuration.placeholderColor
-                    opacity: 0
+                    Text {
+                        anchors.fill: parent
+                        anchors.margins: full.hexW * 0.12
+                        visible: slot.modelData.image === "" && slot.modelData.command !== ""
+                        text: full.labelFor(slot.modelData.command)
+                        color: Plasmoid.configuration.textColor
+                        font.pixelSize: Plasmoid.configuration.textSize
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        wrapMode: Text.WordWrap
+                        elide: Text.ElideRight
+                    }
+
+                    // Zoom lets an image with a lot of transparent padding
+                    // around the actual artwork (typical for 512x512 system
+                    // icons) be cropped in on its center to fill the hex —
+                    // the outer Item stays fixed size and clips, so the
+                    // Image can be scaled up past it without spilling into
+                    // neighbors.
+                    Item {
+                        id: iconClip
+                        anchors.fill: parent
+                        clip: true
+                        visible: slot.modelData.image !== ""
+
+                        Image {
+                            id: icon
+                            anchors.fill: parent
+                            fillMode: Image.PreserveAspectCrop
+                            source: slot.modelData.image || ""
+                            smooth: true
+                            mipmap: true
+                            asynchronous: true
+                            scale: (slot.modelData.zoom || 100) / 100
+                        }
+                    }
                 }
 
                 Shape {
@@ -318,7 +407,7 @@ Item {
                     opacity: 0
                     layer.enabled: true
                     layer.smooth: true
-                    source: icon.status === Image.Ready ? iconClip : placeholder
+                    source: iconContent
                     maskEnabled: true
                     maskSource: hexMask
                     maskThresholdMin: 0.5
