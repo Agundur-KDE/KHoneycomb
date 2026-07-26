@@ -370,6 +370,71 @@ Item {
                 width: full.hexW
                 height: full.hexH
 
+                // Drop shadow behind the hex — a plain solid hex shape,
+                // offset and blurred, not MultiEffect's shadowEnabled (which
+                // also renders an unhideable pass-through copy of whatever
+                // source it's given — tried the plain white mask, then the
+                // masked icon, both showed through as visible artifacts).
+                // width/height instead of anchors.fill: parent — anchors.fill
+                // silently overrides explicit x/y, resetting the offset to 0.
+                // At spacing 0 (flush tiling) the shadow will visibly darken
+                // the touching edge of the next cell over — same caveat that
+                // previously ruled a shadow out entirely; only worth it now
+                // because it's tied to bevelStrength and off by default.
+                // Same repaint issue as the bevel ShaderEffect below — the
+                // blur MultiEffect doesn't repaint on a bevelStrength-only
+                // opacity change either, so it gets the same Loader force-
+                // reload treatment.
+                Loader {
+                    id: shadowLoader
+                    anchors.fill: parent
+                    sourceComponent: shadowComponent
+
+                    Connections {
+                        target: full
+                        function onBevelStrengthChanged() {
+                            shadowLoader.active = false
+                            shadowLoader.active = true
+                        }
+                    }
+                }
+
+                Component {
+                    id: shadowComponent
+                    Item {
+                        anchors.fill: parent
+
+                        Shape {
+                            id: shadowShape
+                            width: parent.width
+                            height: parent.height
+                            x: Math.max(4, full.hexW * 0.07)
+                            y: Math.max(6, full.hexH * 0.1)
+                            opacity: Math.min(0.85, 0.55 * full.bevelStrength)
+                            layer.enabled: true
+                            layer.smooth: true
+                            layer.textureSize: Qt.size(Math.round(width * full.renderScale * Screen.devicePixelRatio), Math.round(height * full.renderScale * Screen.devicePixelRatio))
+                            ShapePath {
+                                fillColor: "black"
+                                strokeColor: "transparent"
+                                startX: full.hexPoints(slot.width, slot.height, 0, 0)[0].x
+                                startY: full.hexPoints(slot.width, slot.height, 0, 0)[0].y
+                                PathPolyline {
+                                    path: full.hexPoints(slot.width, slot.height, 0, 0)
+                                }
+                            }
+                        }
+
+                        MultiEffect {
+                            anchors.fill: shadowShape
+                            source: shadowShape
+                            blurEnabled: true
+                            blur: 0.35
+                            blurMax: 24
+                        }
+                    }
+                }
+
                 // Placeholder color always sits behind the icon (not just
                 // when there's no image) so an image's transparent parts —
                 // corners left over after zoom, round logos, etc — show the
@@ -467,17 +532,41 @@ Item {
                     maskSpreadAtMin: 1.0
                 }
 
-                ShaderEffect {
+                // A plain ShaderEffect here never repaints when only
+                // uStrength changes (confirmed with a guaranteed-fresh
+                // plasmoidviewer load, config-change signal firing correctly
+                // per diagnostic logging, zero visual update regardless) —
+                // forcing a full reload via Loader.active sidesteps whatever
+                // dirty-tracking is failing, since it recreates the item
+                // from scratch instead of hoping it repaints in place.
+                Loader {
+                    id: bevelLoader
                     anchors.fill: parent
-                    property variant source: maskedIcon
-                    property size uItemSize: Qt.size(slot.width, slot.height)
-                    property point uHexCenter: Qt.point(slot.width / 2, slot.height / 2)
-                    property real uHexR: full.pointyTop ? slot.height / 2 : slot.width / 2
-                    property real uPointyTop: full.pointyTop ? 1.0 : 0.0
-                    property real uBevelWidth: Math.max(6, full.hexW * 0.12)
-                    property real uStrength: full.bevelStrength
-                    property point uLightDir: Qt.point(-0.4472, -0.8944)
-                    fragmentShader: "../shaders/bevel.frag.qsb"
+                    sourceComponent: bevelComponent
+
+                    Connections {
+                        target: full
+                        function onBevelStrengthChanged() {
+                            bevelLoader.active = false
+                            bevelLoader.active = true
+                        }
+                    }
+                }
+
+                Component {
+                    id: bevelComponent
+                    ShaderEffect {
+                        anchors.fill: parent
+                        property variant source: maskedIcon
+                        property size uItemSize: Qt.size(slot.width, slot.height)
+                        property point uHexCenter: Qt.point(slot.width / 2, slot.height / 2)
+                        property real uHexR: full.pointyTop ? slot.height / 2 : slot.width / 2
+                        property real uPointyTop: full.pointyTop ? 1.0 : 0.0
+                        property real uBevelWidth: Math.max(6, full.hexW * 0.12)
+                        property real uStrength: full.bevelStrength
+                        property point uLightDir: Qt.point(-0.4472, -0.8944)
+                        fragmentShader: "../shaders/bevel.frag.qsb"
+                    }
                 }
 
                 MouseArea {
