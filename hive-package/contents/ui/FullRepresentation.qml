@@ -439,6 +439,60 @@ Item {
                     }
                 }
 
+                // Mirror of the shadow above, offset toward the opposite
+                // corner and colored white — the classic two-outer-shadow
+                // neumorphism recipe (light top-left + dark bottom-right)
+                // for a "raised" look, no inset/masking trickery needed.
+                Loader {
+                    id: highlightLoader
+                    anchors.fill: parent
+                    sourceComponent: highlightComponent
+
+                    Connections {
+                        target: full
+                        function onBevelStrengthChanged() {
+                            highlightLoader.active = false
+                            highlightLoader.active = true
+                        }
+                    }
+                }
+
+                Component {
+                    id: highlightComponent
+                    Item {
+                        anchors.fill: parent
+
+                        Shape {
+                            id: highlightShape
+                            width: parent.width
+                            height: parent.height
+                            x: -Math.max(3, full.hexW * 0.1)
+                            y: -Math.max(4, full.hexH * 0.13)
+                            layer.enabled: true
+                            layer.smooth: true
+                            layer.textureSize: Qt.size(Math.round(width * full.renderScale * Screen.devicePixelRatio), Math.round(height * full.renderScale * Screen.devicePixelRatio))
+                            ShapePath {
+                                fillColor: "white"
+                                strokeColor: "transparent"
+                                startX: full.hexPoints(slot.width, slot.height, 0, 0)[0].x
+                                startY: full.hexPoints(slot.width, slot.height, 0, 0)[0].y
+                                PathPolyline {
+                                    path: full.hexPoints(slot.width, slot.height, 0, 0)
+                                }
+                            }
+                        }
+
+                        MultiEffect {
+                            anchors.fill: highlightShape
+                            opacity: Math.min(0.6, 0.4 * full.bevelStrength)
+                            source: highlightShape
+                            blurEnabled: true
+                            blur: 0.35
+                            blurMax: 24
+                        }
+                    }
+                }
+
                 // Placeholder color always sits behind the icon (not just
                 // when there's no image) so an image's transparent parts —
                 // corners left over after zoom, round logos, etc — show the
