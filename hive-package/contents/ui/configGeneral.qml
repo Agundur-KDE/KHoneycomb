@@ -127,12 +127,14 @@ KCM.SimpleKCM {
 
         QtControls.SpinBox {
             Kirigami.FormData.label: i18n("3D bevel strength:")
-            from: 0
+            from: -150
             to: 150
             value: cfg_bevelStrength
             onValueModified: cfg_bevelStrength = value
             textFromValue: (value) => value + "%"
             valueFromText: (text) => parseInt(text)
+            QtControls.ToolTip.visible: hovered
+            QtControls.ToolTip.text: i18n("Negative = sunken/inset, 0 = flat, positive = raised")
         }
 
         RowLayout {

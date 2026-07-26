@@ -370,21 +370,10 @@ Item {
                 width: full.hexW
                 height: full.hexH
 
-                // Drop shadow behind the hex — a plain solid hex shape,
-                // offset and blurred, not MultiEffect's shadowEnabled (which
-                // also renders an unhideable pass-through copy of whatever
-                // source it's given — tried the plain white mask, then the
-                // masked icon, both showed through as visible artifacts).
-                // width/height instead of anchors.fill: parent — anchors.fill
-                // silently overrides explicit x/y, resetting the offset to 0.
-                // At spacing 0 (flush tiling) the shadow will visibly darken
-                // the touching edge of the next cell over — same caveat that
-                // previously ruled a shadow out entirely; only worth it now
-                // because it's tied to bevelStrength and off by default.
-                // Same repaint issue as the bevel ShaderEffect below — the
-                // blur MultiEffect doesn't repaint on a bevelStrength-only
-                // opacity change either, so it gets the same Loader force-
-                // reload treatment.
+                // Raised look (positive bevelStrength): two outer shadows,
+                // dark down-right + light up-left, both zero-opacity when
+                // sunken/flat. Not needed for sunken, which uses the inset
+                // bevel band below instead.
                 Loader {
                     id: shadowLoader
                     anchors.fill: parent
@@ -408,8 +397,12 @@ Item {
                             id: shadowShape
                             width: parent.width
                             height: parent.height
-                            x: Math.max(3, full.hexW * 0.1)
-                            y: Math.max(4, full.hexH * 0.13)
+                            // Floats higher (bigger gap) the stronger the
+                            // setting — offset and blur spread grow together
+                            // with strength, not just opacity, so it reads
+                            // as "further from the surface", not just "darker".
+                            x: Math.max(3, full.hexW * (0.04 + 0.08 * Math.max(0, full.bevelStrength)))
+                            y: Math.max(4, full.hexH * (0.05 + 0.1 * Math.max(0, full.bevelStrength)))
                             layer.enabled: true
                             layer.smooth: true
                             layer.textureSize: Qt.size(Math.round(width * full.renderScale * Screen.devicePixelRatio), Math.round(height * full.renderScale * Screen.devicePixelRatio))
@@ -426,23 +419,15 @@ Item {
 
                         MultiEffect {
                             anchors.fill: shadowShape
-                            // opacity has to live here, not on shadowShape —
-                            // shadowShape's own opacity gets ignored once its
-                            // layer texture is consumed as this MultiEffect's
-                            // source, same as hexMask/maskedIcon below.
-                            opacity: Math.min(0.6, 0.4 * full.bevelStrength)
+                            opacity: full.bevelStrength > 0 ? 0.45 : 0
                             source: shadowShape
                             blurEnabled: true
                             blur: 0.35
-                            blurMax: 24
+                            blurMax: 16 + 20 * Math.max(0, full.bevelStrength)
                         }
                     }
                 }
 
-                // Mirror of the shadow above, offset toward the opposite
-                // corner and colored white — the classic two-outer-shadow
-                // neumorphism recipe (light top-left + dark bottom-right)
-                // for a "raised" look, no inset/masking trickery needed.
                 Loader {
                     id: highlightLoader
                     anchors.fill: parent
@@ -466,8 +451,8 @@ Item {
                             id: highlightShape
                             width: parent.width
                             height: parent.height
-                            x: -Math.max(3, full.hexW * 0.1)
-                            y: -Math.max(4, full.hexH * 0.13)
+                            x: -Math.max(3, full.hexW * (0.04 + 0.08 * Math.max(0, full.bevelStrength)))
+                            y: -Math.max(4, full.hexH * (0.05 + 0.1 * Math.max(0, full.bevelStrength)))
                             layer.enabled: true
                             layer.smooth: true
                             layer.textureSize: Qt.size(Math.round(width * full.renderScale * Screen.devicePixelRatio), Math.round(height * full.renderScale * Screen.devicePixelRatio))
@@ -484,11 +469,20 @@ Item {
 
                         MultiEffect {
                             anchors.fill: highlightShape
-                            opacity: Math.min(0.6, 0.4 * full.bevelStrength)
                             source: highlightShape
+                            opacity: full.bevelStrength > 0 ? 0.07 : 0
                             blurEnabled: true
-                            blur: 0.35
-                            blurMax: 24
+                            blur: 0.95
+                            blurMax: 24 + 20 * Math.max(0, full.bevelStrength)
+                        }
+
+                        MultiEffect {
+                            anchors.fill: highlightShape
+                            source: highlightShape
+                            opacity: full.bevelStrength > 0 ? 0.15 : 0
+                            blurEnabled: true
+                            blur: 0.8
+                            blurMax: 16 + 12 * Math.max(0, full.bevelStrength)
                         }
                     }
                 }
@@ -620,10 +614,35 @@ Item {
                         property point uHexCenter: Qt.point(slot.width / 2, slot.height / 2)
                         property real uHexR: full.pointyTop ? slot.height / 2 : slot.width / 2
                         property real uPointyTop: full.pointyTop ? 1.0 : 0.0
-                        property real uBevelWidth: Math.max(6, full.hexW * 0.12)
-                        property real uStrength: full.bevelStrength
-                        property point uLightDir: Qt.point(-0.4472, -0.8944)
+                        // Sign of bevelStrength picks direction (negative =
+                        // sunken/inset, wide band + light-bottom-right/dark-
+                        // top-left; positive = raised, narrower band + the
+                        // opposite light direction), magnitude picks how
+                        // strong either look is. 0 = flat either way.
+                        property real uBevelWidth: full.bevelStrength < 0 ? Math.max(10, full.hexW * 0.28) : Math.max(6, full.hexW * 0.12)
+                        property real uStrength: Math.abs(full.bevelStrength) * 3
+                        property point uLightDir: full.bevelStrength < 0 ? Qt.point(0.4472, 0.8944) : Qt.point(-0.4472, -0.8944)
                         fragmentShader: "../shaders/bevel.frag.qsb"
+                    }
+                }
+
+                // Thin rim stroke in the slot's own color, right at the true
+                // hex edge — without it, the wide sunken bevel band fades to
+                // near-black right up to the boundary between two hexes,
+                // losing the crisp edge definition between them.
+                Shape {
+                    anchors.fill: parent
+                    antialiasing: true
+                    opacity: full.bevelStrength < 0 ? 1 : 0
+                    ShapePath {
+                        fillColor: "transparent"
+                        strokeColor: slot.modelData.color || Plasmoid.configuration.placeholderColor
+                        strokeWidth: Math.max(1, full.hexW * 0.015)
+                        startX: full.hexPoints(slot.width, slot.height, 0, 0)[0].x
+                        startY: full.hexPoints(slot.width, slot.height, 0, 0)[0].y
+                        PathPolyline {
+                            path: full.hexPoints(slot.width, slot.height, 0, 0).concat([full.hexPoints(slot.width, slot.height, 0, 0)[0]])
+                        }
                     }
                 }
 

@@ -35,9 +35,10 @@
       <max>100</max>
     </entry>
     <!-- 50 = the old fixed shading strength; up to 150 for a punchier bevel -->
+    <!-- negative = sunken/inset, 0 = flat, positive = raised -->
     <entry name="bevelStrength" type="Int">
-      <default>50</default>
-      <min>0</min>
+      <default>-50</default>
+      <min>-150</min>
       <max>150</max>
     </entry>
     <entry name="textColor" type="Color">
