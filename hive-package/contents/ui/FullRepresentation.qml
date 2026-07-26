@@ -619,8 +619,12 @@ Item {
                         // top-left; positive = raised, narrower band + the
                         // opposite light direction), magnitude picks how
                         // strong either look is. 0 = flat either way.
-                        property real uBevelWidth: full.bevelStrength < 0 ? Math.max(10, full.hexW * 0.28) : Math.max(6, full.hexW * 0.12)
-                        property real uStrength: Math.abs(full.bevelStrength) * 3
+                        // Sunken band grows with strength (small = tight/
+                        // dark near the edge, large = wide/soft toward the
+                        // center), same "size grows, not just darkness"
+                        // idea as the raised shadow's offset.
+                        property real uBevelWidth: full.bevelStrength < 0 ? Math.max(6, full.hexW * Math.min(0.25, 0.1 + 0.15 * Math.abs(full.bevelStrength))) : Math.max(6, full.hexW * 0.12)
+                        property real uStrength: full.bevelStrength < 0 ? Math.min(1.8, 0.5 + Math.abs(full.bevelStrength) * 2) : full.bevelStrength * 3
                         property point uLightDir: full.bevelStrength < 0 ? Qt.point(0.4472, 0.8944) : Qt.point(-0.4472, -0.8944)
                         fragmentShader: "../shaders/bevel.frag.qsb"
                     }
