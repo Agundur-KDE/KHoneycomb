@@ -21,6 +21,25 @@
     <entry name="placeholderColor" type="Color">
       <default>#ffd021</default>
     </entry>
+    <entry name="backgroundImage" type="String">
+      <default>/usr/share/wallpapers/openSUSEtumbleweed.png</default>
+    </entry>
+    <!-- fit = whole image visible, may letterbox; fill = crops to cover
+         the widget with no letterboxing; stretch = ignores aspect ratio -->
+    <entry name="backgroundFillMode" type="String">
+      <default>fill</default>
+    </entry>
+    <entry name="backgroundDim" type="Int">
+      <default>40</default>
+      <min>0</min>
+      <max>100</max>
+    </entry>
+    <!-- 50 = the old fixed shading strength; up to 150 for a punchier bevel -->
+    <entry name="bevelStrength" type="Int">
+      <default>50</default>
+      <min>0</min>
+      <max>150</max>
+    </entry>
     <entry name="textColor" type="Color">
       <default>#000000</default>
     </entry>
@@ -32,7 +51,7 @@
          [{"image":"","command":"firefox","zoom":100,"color":""}] —
          zoom 100 = no crop, color "" = inherit placeholderColor -->
     <entry name="slots" type="String">
-      <default>[]</default>
+      <default>[{"image":"/usr/share/icons/hicolor/scalable/apps/org.kde.dolphin.svg","command":"dolphin","zoom":100,"color":""},{"image":"/usr/share/icons/hicolor/256x256/apps/firefox.png","command":"firefox","zoom":100,"color":""},{"image":"","command":"okular","zoom":100,"color":""}]</default>
     </entry>
   </group>
 </kcfg>

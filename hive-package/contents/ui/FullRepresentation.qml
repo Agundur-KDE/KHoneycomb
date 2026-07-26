@@ -28,6 +28,7 @@ Item {
     readonly property int hexSize: Plasmoid.configuration.hexSize
     readonly property int hexW: pointyTop ? Math.round(hexSize * hexRatio) : hexSize
     readonly property int hexH: pointyTop ? hexSize : Math.round(hexSize * hexRatio)
+    readonly property real bevelStrength: Plasmoid.configuration.bevelStrength / 100
     // columns setting: 0 = auto (pick whatever column count best matches
     // the widget's current width/height ratio, so dragging wide -> more
     // columns/fewer rows and dragging tall -> fewer columns/more rows),
@@ -329,6 +330,24 @@ Item {
         }
     }
 
+    Image {
+        anchors.fill: parent
+        visible: Plasmoid.configuration.backgroundImage !== ""
+        source: Plasmoid.configuration.backgroundImage
+        fillMode: Plasmoid.configuration.backgroundFillMode === "fit" ? Image.PreserveAspectFit
+            : Plasmoid.configuration.backgroundFillMode === "stretch" ? Image.Stretch
+            : Image.PreserveAspectCrop
+        asynchronous: true
+        smooth: true
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        visible: Plasmoid.configuration.backgroundImage !== "" && Plasmoid.configuration.backgroundDim > 0
+        color: "black"
+        opacity: Plasmoid.configuration.backgroundDim / 100
+    }
+
     Item {
         id: grid
         width: full.gridWidth
@@ -456,7 +475,7 @@ Item {
                     property real uHexR: full.pointyTop ? slot.height / 2 : slot.width / 2
                     property real uPointyTop: full.pointyTop ? 1.0 : 0.0
                     property real uBevelWidth: Math.max(6, full.hexW * 0.12)
-                    property real uStrength: 0.5
+                    property real uStrength: full.bevelStrength
                     property point uLightDir: Qt.point(-0.4472, -0.8944)
                     fragmentShader: "../shaders/bevel.frag.qsb"
                 }

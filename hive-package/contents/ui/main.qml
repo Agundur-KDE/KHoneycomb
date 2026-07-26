@@ -16,7 +16,7 @@ PlasmoidItem {
     preferredRepresentation: fullRepresentation
     Plasmoid.title: i18n("KHiveLaunch")
     Plasmoid.status: PlasmaCore.Types.ActiveStatus
-    Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
+    Plasmoid.backgroundHints: PlasmaCore.Types.ConfigurableBackground
     toolTipMainText: Plasmoid.title
 
     fullRepresentation: FullRepresentation {

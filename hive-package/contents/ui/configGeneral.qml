@@ -5,6 +5,7 @@
  */
 
 import QtQuick
+import QtCore
 import QtQuick.Controls as QtControls
 import QtQuick.Dialogs
 import QtQuick.Layouts
@@ -19,6 +20,10 @@ KCM.SimpleKCM {
     property int cfg_spacing
     property string cfg_orientation
     property color cfg_placeholderColor
+    property string cfg_backgroundImage
+    property string cfg_backgroundFillMode
+    property int cfg_backgroundDim
+    property int cfg_bevelStrength
     property color cfg_textColor
     property int cfg_textSize
     property string cfg_slots
@@ -83,6 +88,51 @@ KCM.SimpleKCM {
             model: [i18n("Flat-top"), i18n("Pointy-top")]
             currentIndex: cfg_orientation === "pointy" ? 1 : 0
             onActivated: cfg_orientation = currentIndex === 1 ? "pointy" : "flat"
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Background image:")
+            QtControls.TextField {
+                Layout.preferredWidth: Kirigami.Units.gridUnit * 12
+                placeholderText: i18n("Optional, fills the whole widget behind the hexagons")
+                text: cfg_backgroundImage
+                onEditingFinished: cfg_backgroundImage = text
+            }
+            QtControls.Button {
+                icon.name: "document-open"
+                onClicked: backgroundImageDialog.open()
+            }
+            QtControls.Button {
+                icon.name: "edit-clear"
+                onClicked: cfg_backgroundImage = ""
+            }
+        }
+
+        QtControls.ComboBox {
+            Kirigami.FormData.label: i18n("Background fit:")
+            model: [i18n("Scale to fill (crop)"), i18n("Scale to fit (letterbox)"), i18n("Stretch")]
+            currentIndex: cfg_backgroundFillMode === "fit" ? 1 : cfg_backgroundFillMode === "stretch" ? 2 : 0
+            onActivated: cfg_backgroundFillMode = ["fill", "fit", "stretch"][currentIndex]
+        }
+
+        QtControls.SpinBox {
+            Kirigami.FormData.label: i18n("Darken background:")
+            from: 0
+            to: 100
+            value: cfg_backgroundDim
+            onValueModified: cfg_backgroundDim = value
+            textFromValue: (value) => value + "%"
+            valueFromText: (text) => parseInt(text)
+        }
+
+        QtControls.SpinBox {
+            Kirigami.FormData.label: i18n("3D bevel strength:")
+            from: 0
+            to: 150
+            value: cfg_bevelStrength
+            onValueModified: cfg_bevelStrength = value
+            textFromValue: (value) => value + "%"
+            valueFromText: (text) => parseInt(text)
         }
 
         RowLayout {
@@ -263,6 +313,14 @@ KCM.SimpleKCM {
                 root.save()
             }
         }
+    }
+
+    FileDialog {
+        id: backgroundImageDialog
+        currentFolder: StandardPaths.standardLocations(StandardPaths.GenericDataLocation)[0] + "/wallpapers"
+        title: i18n("Choose a background image")
+        nameFilters: [i18n("Images (*.png *.jpg *.jpeg *.webp *.svg)")]
+        onAccepted: cfg_backgroundImage = selectedFile.toString().replace("file://", "")
     }
 
     FileDialog {
