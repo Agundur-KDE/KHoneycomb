@@ -408,9 +408,8 @@ Item {
                             id: shadowShape
                             width: parent.width
                             height: parent.height
-                            x: Math.max(4, full.hexW * 0.07)
-                            y: Math.max(6, full.hexH * 0.1)
-                            opacity: Math.min(0.85, 0.55 * full.bevelStrength)
+                            x: Math.max(3, full.hexW * 0.1)
+                            y: Math.max(4, full.hexH * 0.13)
                             layer.enabled: true
                             layer.smooth: true
                             layer.textureSize: Qt.size(Math.round(width * full.renderScale * Screen.devicePixelRatio), Math.round(height * full.renderScale * Screen.devicePixelRatio))
@@ -427,6 +426,11 @@ Item {
 
                         MultiEffect {
                             anchors.fill: shadowShape
+                            // opacity has to live here, not on shadowShape —
+                            // shadowShape's own opacity gets ignored once its
+                            // layer texture is consumed as this MultiEffect's
+                            // source, same as hexMask/maskedIcon below.
+                            opacity: Math.min(0.6, 0.4 * full.bevelStrength)
                             source: shadowShape
                             blurEnabled: true
                             blur: 0.35
