@@ -36,9 +36,14 @@ prefers that.
 
 ## Languages
 
-UI translated into German, Spanish, French, and Russian (English is the
-fallback). Further translations are welcome — the strings live in
-`translate/<lang>/*.po`, standard gettext format.
+🇬🇧 English (fallback) · 🇩🇪 German · 🇪🇸 Spanish · 🇫🇷 French · 🇷🇺 Russian —
+both plasmoids, KHiveLaunch included.
+
+More translations are very welcome! The strings live in
+`translate/<lang>/*.po`, standard gettext format — one `.po` file per
+plasmoid per language (`plasma_applet_de.agundur.khivelaunch.po` and
+`plasma_applet_de.agundur.khoneycomb.po`). Copy an existing file as a
+starting point and open a PR.
 
 ## Not built yet
 
