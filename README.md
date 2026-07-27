@@ -1,6 +1,9 @@
 # KHoneycomb
 
-<p align="center"><img src="assets/screenshot1.png" alt="Honeycomb of hexagon launcher icons on the KDE Plasma desktop" width="600" /></p>
+<p align="center">
+  <img src="assets/screenshot1.png" alt="Honeycomb of hexagon launcher icons on the KDE Plasma desktop" width="600" /><br />
+  <img src="assets/screenshot2.png" alt="Close-up of the bevelled hexagon launcher icons" width="600" />
+</p>
 
 Draggable hexagonal desktop launcher icons for KDE Plasma 6 — inspired by
 [this r/kde thread](https://www.reddit.com/r/kde/) where a Rainmeter-style
