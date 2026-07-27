@@ -12,12 +12,13 @@ screenshot.
 
 ## Features
 
-- Adjustable neumorphism — one signed 3D bevel slider takes every tile
+- Real eye candy, not just an icon grid — a honeycomb of hexagons with
+  adjustable neumorphism: one signed 3D bevel slider takes every tile
   from deeply sunken through flat to raised, not just an on/off effect
 - Your own background image behind the grid, with a darken slider so
   icons stay readable over busy wallpaper
-- Auto-fitting honeycomb grid — flat-top or pointy-top hexagons, columns
-  adapt to however you resize the widget
+- Auto-fitting honeycomb layout — flat-top or pointy-top hexagons,
+  columns adapt to however you resize the widget
 - Drag a tile to reorder it, right-click for a quick icon/command editor
   without opening the full config dialog
 - Per-tile control: icon image, launch command, zoom to crop into icons
@@ -31,11 +32,6 @@ screenshot.
 More translations are very welcome! The strings live in
 `translate/<lang>/plasma_applet_de.agundur.khoneycomb.po`, standard
 gettext format — copy an existing file as a starting point and open a PR.
-
-## Not built yet
-
-- "Decluster" / reset-slot-order action
-- Custom per-slot drop shadows independent of the bevel setting
 
 ## Try it
 
