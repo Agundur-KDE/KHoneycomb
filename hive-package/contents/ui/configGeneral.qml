@@ -12,7 +12,7 @@ import org.kde.kcmutils as KCM
 import org.kde.kirigami as Kirigami
 
 KCM.SimpleKCM {
-    id: root
+    id: page
 
     property int cfg_hexSize
     property int cfg_columns
@@ -162,7 +162,7 @@ KCM.SimpleKCM {
                         Layout.preferredWidth: Kirigami.Units.gridUnit * 12
                         placeholderText: i18n("Icon image")
                         text: image
-                        onEditingFinished: { slotModel.setProperty(index, "image", text); root.save() }
+                        onEditingFinished: { slotModel.setProperty(index, "image", text); page.save() }
                     }
                     QtControls.Button {
                         icon.name: "document-open"
@@ -175,14 +175,14 @@ KCM.SimpleKCM {
                         Layout.fillWidth: true
                         placeholderText: i18n("Command")
                         text: command
-                        onEditingFinished: { slotModel.setProperty(index, "command", text); root.save() }
+                        onEditingFinished: { slotModel.setProperty(index, "command", text); page.save() }
                     }
                     QtControls.SpinBox {
                         from: 40
                         to: 300
                         stepSize: 10
                         value: zoom
-                        onValueModified: { slotModel.setProperty(index, "zoom", value); root.save() }
+                        onValueModified: { slotModel.setProperty(index, "zoom", value); page.save() }
                         QtControls.ToolTip.visible: hovered
                         QtControls.ToolTip.text: i18n("Zoom %, crops in on images with a lot of transparent padding, or shrinks below 100% for images with none")
                     }
@@ -206,16 +206,20 @@ KCM.SimpleKCM {
                     QtControls.Button {
                         icon.name: "go-up"
                         enabled: index > 0
-                        onClicked: { slotModel.move(index, index - 1, 1); root.save() }
+                        onClicked: { slotModel.move(index, index - 1, 1); page.save() }
                     }
                     QtControls.Button {
                         icon.name: "go-down"
                         enabled: index < slotModel.count - 1
-                        onClicked: { slotModel.move(index, index + 1, 1); root.save() }
+                        onClicked: { slotModel.move(index, index + 1, 1); page.save() }
                     }
                     QtControls.Button {
                         icon.name: "list-remove"
-                        onClicked: { slotModel.remove(index); root.save() }
+                        onClicked: {
+                            const cfgPage = page
+                            slotModel.remove(index)
+                            cfgPage.save()
+                        }
                     }
                 }
             }
@@ -233,7 +237,7 @@ KCM.SimpleKCM {
                     onClicked: {
                         for (let i = 0; i < addCountSpin.value; i++)
                             slotModel.append({ image: "", command: "", zoom: 100, color: "" })
-                        root.save()
+                        page.save()
                     }
                 }
             }
@@ -260,7 +264,7 @@ KCM.SimpleKCM {
         onAccepted: {
             if (targetIndex >= 0) {
                 slotModel.setProperty(targetIndex, "color", selectedColor.toString())
-                root.save()
+                page.save()
             }
         }
     }
@@ -274,7 +278,7 @@ KCM.SimpleKCM {
             const path = selectedFile.toString().replace("file://", "")
             if (targetIndex >= 0) {
                 slotModel.setProperty(targetIndex, "image", path)
-                root.save()
+                page.save()
             }
         }
     }
