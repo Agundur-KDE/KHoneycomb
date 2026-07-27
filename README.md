@@ -5,23 +5,34 @@
   <img src="assets/screenshot2.png" alt="Close-up of the bevelled hexagon launcher icons" width="600" />
 </p>
 
-Draggable hexagonal desktop launcher icons for KDE Plasma 6 — inspired by
-[this r/kde thread](https://www.reddit.com/r/kde/) where a Rainmeter-style
-GTK/Cairo hack didn't survive the move from Cinnamon to Plasma.
+**KHoneycomb** is a KDE Plasma 6 widget collection for launching apps from
+a honeycomb of hexagon tiles instead of a plain icon grid or taskbar row —
+inspired by [this r/kde thread](https://www.reddit.com/r/kde/) where a
+Rainmeter-style GTK/Cairo hex launcher didn't survive the move from
+Cinnamon to Plasma.
 
-**Status: early prototype.** One hexagon = one plasmoid instance (add
-several via "Add Widgets", drag each freely on the desktop like Sticky
-Notes) — no cluster-wide config UI yet.
+**KHiveLaunch** (`de.agundur.khivelaunch`) is the main plasmoid: one widget
+holds a whole configurable grid of launcher hexagons, tiled edge-to-edge —
+no need to place and align one plasmoid per icon. The repo also still
+ships the original **KHoneycomb** plasmoid (`de.agundur.khoneycomb`, one
+hexagon per instance, drag each freely like Sticky Notes) for anyone who
+prefers that.
 
-## What works
+## KHiveLaunch features
 
-- Crisp, anti-aliased regular hexagon (`QtQuick.Shapes` + `MultiEffect`
-  mask), no panel background/chrome — flat-top or pointy-top, your choice
-- Config dialog (right-click → Configure): icon image picker, command,
-  size, orientation (flat-top/pointy-top), placeholder color
-- Click launches the configured command
-- Free desktop placement/resizing via Plasma's own edit mode (no custom
-  drag code needed)
+- One widget, whole grid — auto-fitting columns/rows, or a fixed column
+  count; flat-top or pointy-top hexagons
+- Per-slot config: icon image, launch command, zoom (crop into icons with
+  a lot of transparent padding), custom tile color
+- Optional background image behind the grid (fill/fit/stretch + darken
+  slider)
+- Adjustable 3D look — one signed slider from deeply sunken (-150) through
+  flat (0) to raised (+150), not just on/off
+- Grid padding — pixel gap between the honeycomb and the widget edge
+- Hover tooltip shows the clean app name, even for slots whose launch
+  command carries arguments (`thunderbird --profile ...` → "Thunderbird")
+- Drag-to-reorder hexagons, right-click a tile for a quick icon/command
+  editor without opening the full config dialog
 
 ## Languages
 
@@ -31,18 +42,26 @@ fallback). Further translations are welcome — the strings live in
 
 ## Not built yet
 
-- "Decluster" / reset-all-to-a-row action across instances (needs a shared
-  config file, same pattern as [KClaude](https://github.com/Agundur-KDE/KClaude)'s `sessions.json`)
-- Right-click context menu beyond Plasma's default (kill/refresh actions
-  from the original Mint version)
+- KHiveLaunch: "decluster" / reset-slot-order action, custom per-slot
+  drop shadows independent of the bevel setting
+- Original KHoneycomb: not under active development — KHiveLaunch covers
+  the same use case in a single widget, but the plasmoid stays in the
+  repo and installs fine
 
 ## Try it
 
 ```bash
 git clone https://github.com/Agundur-KDE/KHoneycomb.git
-kpackagetool6 --type Plasma/Applet --install KHoneycomb/package/
-plasmoidviewer -a de.agundur.khoneycomb -f planar -s 140x160
+kpackagetool6 --type Plasma/Applet --install KHoneycomb/hive-package/
+plasmoidviewer -a de.agundur.khivelaunch -s 700x400
 ```
 
-Right-click the hexagon → Configure to set the icon image and launch
-command, or add multiple instances via "Add Widgets" for a real cluster.
+Right-click a hexagon → Configure to add slots (icon image + launch
+command), or use the full config dialog for background image, bevel
+strength, and grid padding.
+
+Both plasmoids can also be built and installed system-wide via CMake:
+
+```bash
+cmake -B build && cmake --build build && sudo cmake --install build
+```
