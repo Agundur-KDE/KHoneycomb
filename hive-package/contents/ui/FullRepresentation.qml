@@ -124,6 +124,12 @@ Item {
 
     implicitWidth: gridWidth
     implicitHeight: gridHeight
+    // A freshly-placed desktop widget otherwise defaults to a small fixed
+    // icon-grid cell (~96x96) regardless of implicitWidth/Height, squashing
+    // everything down until the user manually resizes it once — give the
+    // containment an explicit size hint so it starts at the right size.
+    Layout.preferredWidth: gridWidth
+    Layout.preferredHeight: gridHeight
 
     // Desktop free-resize sets width/height directly (no ratio kept), so the
     // whole honeycomb is scaled up/down to fill whatever box we're given —
