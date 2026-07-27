@@ -97,13 +97,56 @@ Item {
         }
     }
 
+    // Split into two MultiEffects on purpose: maskEnabled + shadowEnabled
+    // together on the same MultiEffect silently breaks the mask (falls back
+    // to the full rectangular bounds) — a Qt6 MultiEffect limitation, not
+    // our geometry. Masking happens here only; the shadow effect below reads
+    // this already-hex-shaped alpha, so it doesn't need its own mask.
     MultiEffect {
+        id: maskedIcon
         anchors.fill: parent
+        opacity: 0
+        layer.enabled: true
+        layer.smooth: true
         source: icon.status === Image.Ready ? icon : placeholder
         maskEnabled: true
         maskSource: hexMask
         maskThresholdMin: 0.5
         maskSpreadAtMin: 1.0
+    }
+
+    // Raised-bead, Weg B: a single analytic hexagon signed-distance-field
+    // shades color continuously near the edge (light from upper-left, dark
+    // lower-right) — flat interior, bevel only in a thin band near the rim.
+    // Only ever touches color, never alpha, so it can sit safely between the
+    // mask stage and the shadow stage without reintroducing the mask bug.
+    ShaderEffect {
+        id: bevelShaded
+        anchors.fill: parent
+        opacity: 0
+        layer.enabled: true
+        layer.smooth: true
+        property variant source: maskedIcon
+        property size uItemSize: Qt.size(full.width, full.height)
+        property point uHexCenter: Qt.point(full.hexOffsetX + full.hexWidth / 2, full.hexOffsetY + full.hexHeight / 2)
+        property real uHexR: full.pointyTop ? full.hexHeight / 2 : full.hexWidth / 2
+        property real uPointyTop: full.pointyTop ? 1.0 : 0.0
+        property real uBevelWidth: Math.max(4, full.hexWidth * 0.08)
+        property real uStrength: 0.35
+        property point uLightDir: Qt.point(-0.4472, -0.8944)
+
+        fragmentShader: "../shaders/bevel.frag.qsb"
+    }
+
+    MultiEffect {
+        anchors.fill: parent
+        source: bevelShaded
+
+        shadowEnabled: true
+        shadowColor: Qt.rgba(0, 0, 0, 0.55)
+        shadowBlur: 0.6
+        shadowVerticalOffset: 4
+        shadowHorizontalOffset: 0
     }
 
     Plasma5Support.DataSource {

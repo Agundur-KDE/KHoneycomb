@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0       http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+  <kcfgfile name=""/>
+  <group name="General">
+    <entry name="hexSize" type="Int">
+      <default>90</default>
+      <min>40</min>
+    </entry>
+    <!-- 0 = auto columns, fits current widget width/height ratio -->
+    <entry name="columns" type="Int">
+      <default>0</default>
+      <min>0</min>
+    </entry>
+    <entry name="spacing" type="Int">
+      <default>5</default>
+      <min>0</min>
+    </entry>
+    <entry name="orientation" type="String">
+      <default>flat</default>
+    </entry>
+    <entry name="placeholderColor" type="Color">
+      <default>#ffd021</default>
+    </entry>
+    <entry name="backgroundImage" type="String">
+      <default></default>
+    </entry>
+    <!-- fit = whole image visible, may letterbox; fill = crops to cover
+         the widget with no letterboxing; stretch = ignores aspect ratio -->
+    <entry name="backgroundFillMode" type="String">
+      <default>fill</default>
+    </entry>
+    <entry name="backgroundDim" type="Int">
+      <default>40</default>
+      <min>0</min>
+      <max>100</max>
+    </entry>
+    <!-- 50 = the old fixed shading strength; up to 150 for a punchier bevel -->
+    <!-- negative = sunken/inset, 0 = flat, positive = raised -->
+    <entry name="bevelStrength" type="Int">
+      <default>-50</default>
+      <min>-150</min>
+      <max>150</max>
+    </entry>
+    <!-- pixels of empty space between the whole honeycomb and the widget edge -->
+    <entry name="gridPadding" type="Int">
+      <default>0</default>
+      <min>0</min>
+      <max>60</max>
+    </entry>
+    <entry name="textColor" type="Color">
+      <default>#000000</default>
+    </entry>
+    <entry name="textSize" type="Int">
+      <default>14</default>
+      <min>6</min>
+    </entry>
+    <!-- JSON array of {image, command, zoom, color}, e.g.
+         [{"image":"","command":"firefox","zoom":100,"color":""}] —
+         zoom 100 = no crop, color "" = inherit placeholderColor -->
+    <entry name="slots" type="String">
+      <default>[{"image":"/usr/share/icons/hicolor/scalable/apps/org.kde.dolphin.svg","command":"dolphin","zoom":100,"color":""},{"image":"/usr/share/icons/hicolor/256x256/apps/firefox.png","command":"firefox","zoom":100,"color":""},{"image":"","command":"okular","zoom":100,"color":""}]</default>
+    </entry>
+  </group>
+</kcfg>

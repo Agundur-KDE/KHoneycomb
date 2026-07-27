@@ -14,11 +14,16 @@ find_package(KF6 ${KF6_MIN_VERSION} REQUIRED COMPONENTS
 )
 
 set(PLASMOID_ID de.agundur.khoneycomb)
+set(HIVE_PLASMOID_ID de.agundur.khivelaunch)
 
 enable_testing()
 add_test(NAME validate-metadata
     COMMAND python3 ${CMAKE_SOURCE_DIR}/scripts/validate-metadata.py
                     ${CMAKE_SOURCE_DIR}/package/metadata.json
+)
+add_test(NAME validate-metadata-hive
+    COMMAND python3 ${CMAKE_SOURCE_DIR}/scripts/validate-metadata.py
+                    ${CMAKE_SOURCE_DIR}/hive-package/metadata.json
 )
 
 ki18n_install(translate
@@ -26,3 +31,4 @@ ki18n_install(translate
 )
 
 install(DIRECTORY package/ DESTINATION ${KDE_INSTALL_DATADIR}/plasma/plasmoids/${PLASMOID_ID})
+install(DIRECTORY hive-package/ DESTINATION ${KDE_INSTALL_DATADIR}/plasma/plasmoids/${HIVE_PLASMOID_ID})
