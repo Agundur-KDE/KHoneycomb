@@ -26,8 +26,8 @@ prefers that.
   a lot of transparent padding), custom tile color
 - Optional background image behind the grid (fill/fit/stretch + darken
   slider)
-- Adjustable 3D look — one signed slider from deeply sunken (-150) through
-  flat (0) to raised (+150), not just on/off
+- Adjustable neumorphism — one signed 3D bevel slider from deeply sunken
+  (-150) through flat (0) to raised (+150), not just on/off
 - Grid padding — pixel gap between the honeycomb and the widget edge
 - Hover tooltip shows the clean app name, even for slots whose launch
   command carries arguments (`thunderbird --profile ...` → "Thunderbird")
