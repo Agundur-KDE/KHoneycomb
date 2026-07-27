@@ -5,27 +5,24 @@
   <img src="assets/screenshot2.png" alt="Close-up of the bevelled hexagon launcher icons" width="600" />
 </p>
 
-**KHiveLaunch** is a KDE Plasma 6 widget that launches apps from a
-honeycomb of hexagon tiles in a single widget, instead of a plain icon
-grid or taskbar row — inspired by [this r/kde thread](https://www.reddit.com/r/kde/)
-where a Rainmeter-style GTK/Cairo hex launcher didn't survive the move
-from Cinnamon to Plasma.
+**KHiveLaunch** is a KDE Plasma 6 application launcher widget — a
+honeycomb of glowing hexagon tiles instead of a plain icon grid or
+taskbar row, made for ricing your desktop into something worth a
+screenshot.
 
 ## Features
 
-- One widget, whole grid — auto-fitting columns/rows, or a fixed column
-  count; flat-top or pointy-top hexagons
-- Per-slot config: icon image, launch command, zoom (crop into icons with
-  a lot of transparent padding), custom tile color
-- Optional background image behind the grid (fill/fit/stretch + darken
-  slider)
-- Adjustable neumorphism — one signed 3D bevel slider from deeply sunken
-  (-150) through flat (0) to raised (+150), not just on/off
-- Grid padding — pixel gap between the honeycomb and the widget edge
-- Hover tooltip shows the clean app name, even for slots whose launch
-  command carries arguments (`thunderbird --profile ...` → "Thunderbird")
-- Drag-to-reorder hexagons, right-click a tile for a quick icon/command
-  editor without opening the full config dialog
+- Adjustable neumorphism — one signed 3D bevel slider takes every tile
+  from deeply sunken through flat to raised, not just an on/off effect
+- Your own background image behind the grid, with a darken slider so
+  icons stay readable over busy wallpaper
+- Auto-fitting honeycomb grid — flat-top or pointy-top hexagons, columns
+  adapt to however you resize the widget
+- Drag a tile to reorder it, right-click for a quick icon/command editor
+  without opening the full config dialog
+- Per-tile control: icon image, launch command, zoom to crop into icons
+  with a lot of transparent padding, custom tile color
+- Grid padding and hover tooltips round out the polish
 
 ## Languages
 
