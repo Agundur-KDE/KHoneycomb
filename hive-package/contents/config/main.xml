@@ -41,6 +41,12 @@
       <min>-150</min>
       <max>150</max>
     </entry>
+    <!-- pixels of empty space between the whole honeycomb and the widget edge -->
+    <entry name="gridPadding" type="Int">
+      <default>0</default>
+      <min>0</min>
+      <max>60</max>
+    </entry>
     <entry name="textColor" type="Color">
       <default>#000000</default>
     </entry>

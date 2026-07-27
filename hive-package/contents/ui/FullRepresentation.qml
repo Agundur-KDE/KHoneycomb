@@ -123,22 +123,23 @@ Item {
         return Math.max(hexH, Math.round(maxY))
     }
 
-    implicitWidth: gridWidth
-    implicitHeight: gridHeight
+    implicitWidth: gridWidth + Plasmoid.configuration.gridPadding * 2
+    implicitHeight: gridHeight + Plasmoid.configuration.gridPadding * 2
     // A freshly-placed desktop widget otherwise defaults to a small fixed
     // icon-grid cell (~96x96) regardless of implicitWidth/Height, squashing
     // everything down until the user manually resizes it once — give the
     // containment an explicit size hint so it starts at the right size.
-    Layout.preferredWidth: gridWidth
-    Layout.preferredHeight: gridHeight
+    Layout.preferredWidth: gridWidth + Plasmoid.configuration.gridPadding * 2
+    Layout.preferredHeight: gridHeight + Plasmoid.configuration.gridPadding * 2
 
     // Desktop free-resize sets width/height directly (no ratio kept), so the
     // whole honeycomb is scaled up/down to fill whatever box we're given —
     // same idea as KHoneycomb's own live-resize tracking, just done as one
     // uniform transform on the grid wrapper instead of recomputing every
-    // cell's geometry.
+    // cell's geometry. gridPadding shrinks the box the grid scales into on
+    // both sides, leaving it as empty space around the honeycomb instead.
     readonly property real renderScale: (width > 0 && height > 0 && gridWidth > 0 && gridHeight > 0)
-        ? Math.min(width / gridWidth, height / gridHeight)
+        ? Math.max(0.05, Math.min((width - Plasmoid.configuration.gridPadding * 2) / gridWidth, (height - Plasmoid.configuration.gridPadding * 2) / gridHeight))
         : 1
 
     // Fallback label when a slot has a command but no icon image — first
@@ -356,6 +357,8 @@ Item {
 
     Item {
         id: grid
+        x: Plasmoid.configuration.gridPadding
+        y: Plasmoid.configuration.gridPadding
         width: full.gridWidth
         height: full.gridHeight
         scale: full.renderScale
@@ -501,133 +504,152 @@ Item {
                     }
                 }
 
-                // Placeholder color always sits behind the icon (not just
-                // when there's no image) so an image's transparent parts —
-                // corners left over after zoom, round logos, etc — show the
-                // configured color instead of raw desktop background. Pick
-                // an alpha-0 color in the config to turn this off.
-                Item {
-                    id: iconContent
+                // icon/mask stack is Loader-wrapped and fully recreated on
+                // renderScale change instead of just toggling layer.enabled
+                // in place — toggling wasn't reliable here (confirmed: the
+                // handler fires correctly per diagnostic logging, but the
+                // mask stayed stale/unmasked, plain white hex, until some
+                // unrelated repaint like dragging a slot). Full recreation
+                // is the same, already-proven-reliable fix used below for
+                // the bevel ShaderEffect.
+                Loader {
+                    id: iconMaskLoader
                     anchors.fill: parent
-                    opacity: 0
-                    // without its own layer here, MultiEffect's source:
-                    // capture below happens at this Item's native small
-                    // size — throwing away all the extra resolution the
-                    // Image inside rasterizes at via its own sourceSize
-                    layer.enabled: true
-                    layer.smooth: true
-                    layer.textureSize: Qt.size(Math.round(width * full.renderScale * Screen.devicePixelRatio), Math.round(height * full.renderScale * Screen.devicePixelRatio))
+                    sourceComponent: iconMaskComponent
 
-                    Rectangle {
-                        id: placeholder
-                        anchors.fill: parent
-                        color: slot.modelData.color || Plasmoid.configuration.placeholderColor
+                    Connections {
+                        target: full
+                        function onRenderScaleChanged() {
+                            iconMaskLoader.active = false
+                            iconMaskLoader.active = true
+                        }
                     }
+                }
 
-                    Text {
-                        anchors.fill: parent
-                        anchors.margins: full.hexW * 0.12
-                        visible: slot.modelData.image === "" && slot.modelData.command !== ""
-                        text: full.labelFor(slot.modelData.command)
-                        color: Plasmoid.configuration.textColor
-                        font.pixelSize: Plasmoid.configuration.textSize
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        wrapMode: Text.WordWrap
-                        elide: Text.ElideRight
-                    }
-
-                    // Zoom lets an image with a lot of transparent padding
-                    // around the actual artwork (typical for 512x512 system
-                    // icons) be cropped in on its center to fill the hex —
-                    // the outer Item stays fixed size and clips, so the
-                    // Image can be scaled up past it without spilling into
-                    // neighbors.
+                Component {
+                    id: iconMaskComponent
                     Item {
-                        id: iconClip
                         anchors.fill: parent
-                        clip: true
-                        visible: slot.modelData.image !== ""
+                        // maskedIcon's own id isn't reachable from outside
+                        // this Loader-instantiated Component (confirmed:
+                        // "maskedIcon is not defined" from the bevel
+                        // ShaderEffect below) — expose it explicitly instead.
+                        property alias maskedIconRef: maskedIcon
 
-                        Image {
-                            id: icon
+                        // Placeholder color always sits behind the icon (not
+                        // just when there's no image) so an image's
+                        // transparent parts — corners left over after zoom,
+                        // round logos, etc — show the configured color
+                        // instead of raw desktop background. Pick an alpha-0
+                        // color in the config to turn this off.
+                        Item {
+                            id: iconContent
                             anchors.fill: parent
-                            fillMode: Image.PreserveAspectCrop
-                            source: slot.modelData.image || ""
-                            smooth: true
-                            mipmap: true
-                            asynchronous: true
-                            scale: (slot.modelData.zoom || 100) / 100
-                            // without this, SVG icons rasterize at a small
-                            // default size and get blurrily upscaled from
-                            // there — before renderScale/textureSize below
-                            // even come into play
-                            sourceSize: Qt.size(Math.round(width * full.renderScale * Screen.devicePixelRatio * scale), Math.round(height * full.renderScale * Screen.devicePixelRatio * scale))
+                            opacity: 0
+                            // without its own layer here, MultiEffect's
+                            // source: capture below happens at this Item's
+                            // native small size — throwing away all the
+                            // extra resolution the Image inside rasterizes
+                            // at via its own sourceSize
+                            layer.enabled: true
+                            layer.smooth: true
+                            layer.textureSize: Qt.size(Math.round(width * full.renderScale * Screen.devicePixelRatio), Math.round(height * full.renderScale * Screen.devicePixelRatio))
+
+                            Rectangle {
+                                id: placeholder
+                                anchors.fill: parent
+                                color: slot.modelData.color || Plasmoid.configuration.placeholderColor
+                            }
+
+                            Text {
+                                anchors.fill: parent
+                                anchors.margins: full.hexW * 0.12
+                                visible: slot.modelData.image === "" && slot.modelData.command !== ""
+                                text: full.labelFor(slot.modelData.command)
+                                color: Plasmoid.configuration.textColor
+                                font.pixelSize: Plasmoid.configuration.textSize
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                wrapMode: Text.WordWrap
+                                elide: Text.ElideRight
+                            }
+
+                            // Zoom lets an image with a lot of transparent
+                            // padding around the actual artwork (typical for
+                            // 512x512 system icons) be cropped in on its
+                            // center to fill the hex — the outer Item stays
+                            // fixed size and clips, so the Image can be
+                            // scaled up past it without spilling into
+                            // neighbors.
+                            Item {
+                                id: iconClip
+                                anchors.fill: parent
+                                clip: true
+                                visible: slot.modelData.image !== ""
+
+                                Image {
+                                    id: icon
+                                    anchors.fill: parent
+                                    fillMode: Image.PreserveAspectCrop
+                                    source: slot.modelData.image || ""
+                                    smooth: true
+                                    mipmap: true
+                                    asynchronous: true
+                                    scale: (slot.modelData.zoom || 100) / 100
+                                    // without this, SVG icons rasterize at a
+                                    // small default size and get blurrily
+                                    // upscaled from there — before
+                                    // renderScale/textureSize below even
+                                    // come into play
+                                    sourceSize: Qt.size(Math.round(width * full.renderScale * Screen.devicePixelRatio * scale), Math.round(height * full.renderScale * Screen.devicePixelRatio * scale))
+                                }
+                            }
                         }
-                    }
-                }
 
-                Shape {
-                    id: hexMask
-                    anchors.fill: parent
-                    opacity: 0
-                    layer.enabled: true
-                    layer.smooth: true
-                    // layer textures snapshot at this item's native pixel size;
-                    // the whole grid gets scaled up afterwards by renderScale
-                    // (see gridWrapper), so without this the mask/bevel/icon
-                    // textures get blurrily stretched right along with it.
-                    layer.textureSize: Qt.size(Math.round(width * full.renderScale * Screen.devicePixelRatio), Math.round(height * full.renderScale * Screen.devicePixelRatio))
-                    ShapePath {
-                        fillColor: "white"
-                        strokeColor: "transparent"
-                        startX: full.hexPoints(slot.width, slot.height, 0, 0)[0].x
-                        startY: full.hexPoints(slot.width, slot.height, 0, 0)[0].y
-                        PathPolyline {
-                            path: full.hexPoints(slot.width, slot.height, 0, 0)
+                        Shape {
+                            id: hexMask
+                            anchors.fill: parent
+                            opacity: 0
+                            layer.enabled: true
+                            layer.smooth: true
+                            // layer textures snapshot at this item's native
+                            // pixel size; the whole grid gets scaled up
+                            // afterwards by renderScale (see gridWrapper),
+                            // so without this the mask/bevel/icon textures
+                            // get blurrily stretched right along with it.
+                            layer.textureSize: Qt.size(Math.round(width * full.renderScale * Screen.devicePixelRatio), Math.round(height * full.renderScale * Screen.devicePixelRatio))
+                            ShapePath {
+                                fillColor: "white"
+                                strokeColor: "transparent"
+                                startX: full.hexPoints(slot.width, slot.height, 0, 0)[0].x
+                                startY: full.hexPoints(slot.width, slot.height, 0, 0)[0].y
+                                PathPolyline {
+                                    path: full.hexPoints(slot.width, slot.height, 0, 0)
+                                }
+                            }
                         }
-                    }
-                }
 
-                // Mask-only stage (see KHoneycomb: maskEnabled + shadowEnabled
-                // on the same MultiEffect breaks the mask, a Qt6 limitation)
-                // — no shadow stage here at all, unlike KHoneycomb: cells sit
-                // flush against their neighbors, so a drop shadow would just
-                // darken the touching edge of the next cell over. The bevel
-                // alone gives each cell a raised-wax-wall look without that
-                // side effect.
-                MultiEffect {
-                    id: maskedIcon
-                    anchors.fill: parent
-                    opacity: 0
-                    layer.enabled: true
-                    layer.smooth: true
-                    layer.textureSize: Qt.size(Math.round(width * full.renderScale * Screen.devicePixelRatio), Math.round(height * full.renderScale * Screen.devicePixelRatio))
-                    source: iconContent
-                    maskEnabled: true
-                    maskSource: hexMask
-                    maskThresholdMin: 0.5
-                    maskSpreadAtMin: 1.0
-                }
-
-                // hexMask/maskedIcon layer textures are captured once at
-                // whatever renderScale happened to be true at that moment —
-                // on a real panel/desktop placement the widget gets resized
-                // during layout negotiation after the first paint, and Qt
-                // doesn't reliably re-snapshot a layered item's texture just
-                // because layer.textureSize's bound value changed (same
-                // repaint bug as the bevel ShaderEffect below). A fixed
-                // plasmoidviewer -s size never hits this, which is why it
-                // looked fine there but blurry for real.
-                Connections {
-                    target: full
-                    function onRenderScaleChanged() {
-                        iconContent.layer.enabled = false
-                        iconContent.layer.enabled = true
-                        hexMask.layer.enabled = false
-                        hexMask.layer.enabled = true
-                        maskedIcon.layer.enabled = false
-                        maskedIcon.layer.enabled = true
+                        // Mask-only stage (see KHoneycomb: maskEnabled +
+                        // shadowEnabled on the same MultiEffect breaks the
+                        // mask, a Qt6 limitation) — no shadow stage here at
+                        // all, unlike KHoneycomb: cells sit flush against
+                        // their neighbors, so a drop shadow would just
+                        // darken the touching edge of the next cell over.
+                        // The bevel alone gives each cell a raised-wax-wall
+                        // look without that side effect.
+                        MultiEffect {
+                            id: maskedIcon
+                            anchors.fill: parent
+                            opacity: 0
+                            layer.enabled: true
+                            layer.smooth: true
+                            layer.textureSize: Qt.size(Math.round(width * full.renderScale * Screen.devicePixelRatio), Math.round(height * full.renderScale * Screen.devicePixelRatio))
+                            source: iconContent
+                            maskEnabled: true
+                            maskSource: hexMask
+                            maskThresholdMin: 0.5
+                            maskSpreadAtMin: 1.0
+                        }
                     }
                 }
 
@@ -660,7 +682,7 @@ Item {
                     id: bevelComponent
                     ShaderEffect {
                         anchors.fill: parent
-                        property variant source: maskedIcon
+                        property variant source: iconMaskLoader.item ? iconMaskLoader.item.maskedIconRef : null
                         property size uItemSize: Qt.size(slot.width, slot.height)
                         property point uHexCenter: Qt.point(slot.width / 2, slot.height / 2)
                         property real uHexR: full.pointyTop ? slot.height / 2 : slot.width / 2

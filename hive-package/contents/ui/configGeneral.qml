@@ -24,6 +24,7 @@ KCM.SimpleKCM {
     property string cfg_backgroundFillMode
     property int cfg_backgroundDim
     property int cfg_bevelStrength
+    property int cfg_gridPadding
     property color cfg_textColor
     property int cfg_textSize
     property string cfg_slots
@@ -135,6 +136,16 @@ KCM.SimpleKCM {
             valueFromText: (text) => parseInt(text)
             QtControls.ToolTip.visible: hovered
             QtControls.ToolTip.text: i18n("Negative = sunken/inset, 0 = flat, positive = raised")
+        }
+
+        QtControls.SpinBox {
+            Kirigami.FormData.label: i18n("Grid padding:")
+            from: 0
+            to: 60
+            value: cfg_gridPadding
+            onValueModified: cfg_gridPadding = value
+            QtControls.ToolTip.visible: hovered
+            QtControls.ToolTip.text: i18n("Empty space between the honeycomb and the widget edge")
         }
 
         RowLayout {
