@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validates package/metadata.json for Plasma 6 compliance."""
+"""Validates a plasmoid's metadata.json for Plasma 6 compliance."""
 
 import json
 import re
