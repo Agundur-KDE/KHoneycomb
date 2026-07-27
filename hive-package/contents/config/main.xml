@@ -22,7 +22,7 @@
       <default>#ffd021</default>
     </entry>
     <entry name="backgroundImage" type="String">
-      <default>/usr/share/wallpapers/openSUSEtumbleweed.png</default>
+      <default></default>
     </entry>
     <!-- fit = whole image visible, may letterbox; fill = crops to cover
          the widget with no letterboxing; stretch = ignores aspect ratio -->
