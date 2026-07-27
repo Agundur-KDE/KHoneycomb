@@ -18,11 +18,6 @@ import org.kde.kirigami as Kirigami
 Item {
     id: full
 
-    // Same ratio/orientation/vertex math as KHoneycomb's FullRepresentation —
-    // kept as a plain copy here on purpose (see ideen.md KHiveLaunch notes):
-    // the two plasmoids have different enough surrounding code (grid layout
-    // vs. single icon) that sharing this handful of lines isn't worth the
-    // packaging complexity of a common QML module.
     readonly property real hexRatio: 0.8660254
     readonly property bool pointyTop: Plasmoid.configuration.orientation === "pointy"
     readonly property int hexSize: Plasmoid.configuration.hexSize

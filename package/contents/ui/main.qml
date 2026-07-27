@@ -14,7 +14,7 @@ PlasmoidItem {
     id: root
 
     preferredRepresentation: fullRepresentation
-    Plasmoid.title: i18n("KHiveLaunch")
+    Plasmoid.title: i18n("KHoneycomb")
     Plasmoid.status: PlasmaCore.Types.ActiveStatus
     Plasmoid.backgroundHints: PlasmaCore.Types.ConfigurableBackground
     toolTipMainText: Plasmoid.title

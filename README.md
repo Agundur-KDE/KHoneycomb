@@ -5,7 +5,7 @@
   <img src="assets/screenshot2.png" alt="Close-up of the bevelled hexagon launcher icons" width="600" />
 </p>
 
-**KHiveLaunch** is a KDE Plasma 6 application launcher widget — a
+**KHoneycomb** is a KDE Plasma 6 application launcher widget — a
 honeycomb of glowing hexagon tiles instead of a plain icon grid or
 taskbar row, made for ricing your desktop into something worth a
 screenshot.
@@ -29,7 +29,7 @@ screenshot.
 🇬🇧 English (fallback) · 🇩🇪 German · 🇪🇸 Spanish · 🇫🇷 French · 🇷🇺 Russian
 
 More translations are very welcome! The strings live in
-`translate/<lang>/plasma_applet_de.agundur.khivelaunch.po`, standard
+`translate/<lang>/plasma_applet_de.agundur.khoneycomb.po`, standard
 gettext format — copy an existing file as a starting point and open a PR.
 
 ## Not built yet
@@ -41,8 +41,8 @@ gettext format — copy an existing file as a starting point and open a PR.
 
 ```bash
 git clone https://github.com/Agundur-KDE/KHoneycomb.git
-kpackagetool6 --type Plasma/Applet --install KHoneycomb/hive-package/
-plasmoidviewer -a de.agundur.khivelaunch -s 700x400
+kpackagetool6 --type Plasma/Applet --install KHoneycomb/package/
+plasmoidviewer -a de.agundur.khoneycomb -s 700x400
 ```
 
 Right-click a hexagon → Configure to add slots (icon image + launch

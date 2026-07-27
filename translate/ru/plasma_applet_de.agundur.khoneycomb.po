@@ -1,10 +1,10 @@
-# Russian translation of khivelaunch.
+# Russian translation of khoneycomb.
 # Copyright (C) 2026 Agundur
 # This file is distributed under the same license as the khoneycomb package.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: plasma_applet_de.agundur.khivelaunch\n"
+"Project-Id-Version: plasma_applet_de.agundur.khoneycomb\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-01-01 00:00+0000\n"
 "PO-Revision-Date: 2026-07-27 00:00+0000\n"
@@ -16,168 +16,168 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: hive-package/contents/ui/main.qml:17
-msgid "KHiveLaunch"
-msgstr "KHiveLaunch"
+#: package/contents/ui/main.qml:17
+msgid "KHoneycomb"
+msgstr "KHoneycomb"
 
-#: hive-package/contents/ui/FullRepresentation.qml:254
+#: package/contents/ui/FullRepresentation.qml:254
 msgid "Edit hexagon"
 msgstr "Редактировать шестиугольник"
 
-#: hive-package/contents/ui/FullRepresentation.qml:262
-#: hive-package/contents/ui/configGeneral.qml:226
+#: package/contents/ui/FullRepresentation.qml:262
+#: package/contents/ui/configGeneral.qml:226
 msgid "Icon image"
 msgstr "Изображение значка"
 
-#: hive-package/contents/ui/FullRepresentation.qml:272
-#: hive-package/contents/ui/configGeneral.qml:239
+#: package/contents/ui/FullRepresentation.qml:272
+#: package/contents/ui/configGeneral.qml:239
 msgid "Command"
 msgstr "Команда"
 
-#: hive-package/contents/ui/FullRepresentation.qml:275
+#: package/contents/ui/FullRepresentation.qml:275
 msgid "Zoom:"
 msgstr "Масштаб:"
 
-#: hive-package/contents/ui/FullRepresentation.qml:286
+#: package/contents/ui/FullRepresentation.qml:286
 msgid "Color:"
 msgstr "Цвет:"
 
-#: hive-package/contents/ui/FullRepresentation.qml:301
+#: package/contents/ui/FullRepresentation.qml:301
 msgid "Transparent"
 msgstr "Прозрачный"
 
-#: hive-package/contents/ui/FullRepresentation.qml:305
+#: package/contents/ui/FullRepresentation.qml:305
 msgid "Default"
 msgstr "По умолчанию"
 
-#: hive-package/contents/ui/FullRepresentation.qml:311
+#: package/contents/ui/FullRepresentation.qml:311
 msgid "Save"
 msgstr "Сохранить"
 
-#: hive-package/contents/ui/FullRepresentation.qml:315
+#: package/contents/ui/FullRepresentation.qml:315
 msgid "Clear"
 msgstr "Очистить"
 
-#: hive-package/contents/ui/FullRepresentation.qml:319
+#: package/contents/ui/FullRepresentation.qml:319
 msgid "Close"
 msgstr "Закрыть"
 
-#: hive-package/contents/ui/FullRepresentation.qml:327
-#: hive-package/contents/ui/configGeneral.qml:346
+#: package/contents/ui/FullRepresentation.qml:327
+#: package/contents/ui/configGeneral.qml:346
 msgid "Choose an icon image"
 msgstr "Выбрать изображение значка"
 
-#: hive-package/contents/ui/FullRepresentation.qml:328
-#: hive-package/contents/ui/configGeneral.qml:339
-#: hive-package/contents/ui/configGeneral.qml:347
+#: package/contents/ui/FullRepresentation.qml:328
+#: package/contents/ui/configGeneral.qml:339
+#: package/contents/ui/configGeneral.qml:347
 msgid "Images (*.png *.jpg *.jpeg *.webp *.svg)"
 msgstr "Изображения (*.png *.jpg *.jpeg *.webp *.svg)"
 
-#: hive-package/contents/ui/configGeneral.qml:61
+#: package/contents/ui/configGeneral.qml:61
 msgid "Hexagon size:"
 msgstr "Размер шестиугольника:"
 
-#: hive-package/contents/ui/configGeneral.qml:70
+#: package/contents/ui/configGeneral.qml:70
 msgid "Columns:"
 msgstr "Столбцы:"
 
-#: hive-package/contents/ui/configGeneral.qml:76
+#: package/contents/ui/configGeneral.qml:76
 msgid "0 = automatic, fits the widget's current shape"
 msgstr "0 = автоматически, подстраивается под текущую форму виджета"
 
-#: hive-package/contents/ui/configGeneral.qml:80
+#: package/contents/ui/configGeneral.qml:80
 msgid "Spacing:"
 msgstr "Интервал:"
 
-#: hive-package/contents/ui/configGeneral.qml:88
+#: package/contents/ui/configGeneral.qml:88
 msgid "Orientation:"
 msgstr "Ориентация:"
 
-#: hive-package/contents/ui/configGeneral.qml:89
+#: package/contents/ui/configGeneral.qml:89
 msgid "Flat-top"
 msgstr "Плоская вершина"
 
-#: hive-package/contents/ui/configGeneral.qml:89
+#: package/contents/ui/configGeneral.qml:89
 msgid "Pointy-top"
 msgstr "Острая вершина"
 
-#: hive-package/contents/ui/configGeneral.qml:95
+#: package/contents/ui/configGeneral.qml:95
 msgid "Background image:"
 msgstr "Фоновое изображение:"
 
-#: hive-package/contents/ui/configGeneral.qml:98
+#: package/contents/ui/configGeneral.qml:98
 msgid "Optional, fills the whole widget behind the hexagons"
 msgstr "Необязательно, заполняет весь виджет за сотами"
 
-#: hive-package/contents/ui/configGeneral.qml:113
+#: package/contents/ui/configGeneral.qml:113
 msgid "Background fit:"
 msgstr "Подгонка фона:"
 
-#: hive-package/contents/ui/configGeneral.qml:114
+#: package/contents/ui/configGeneral.qml:114
 msgid "Scale to fill (crop)"
 msgstr "Заполнить (обрезка)"
 
-#: hive-package/contents/ui/configGeneral.qml:114
+#: package/contents/ui/configGeneral.qml:114
 msgid "Scale to fit (letterbox)"
 msgstr "Вписать (с полосами)"
 
-#: hive-package/contents/ui/configGeneral.qml:114
+#: package/contents/ui/configGeneral.qml:114
 msgid "Stretch"
 msgstr "Растянуть"
 
-#: hive-package/contents/ui/configGeneral.qml:120
+#: package/contents/ui/configGeneral.qml:120
 msgid "Darken background:"
 msgstr "Затемнить фон:"
 
-#: hive-package/contents/ui/configGeneral.qml:130
+#: package/contents/ui/configGeneral.qml:130
 msgid "3D bevel strength:"
 msgstr "Сила 3D-фаски:"
 
-#: hive-package/contents/ui/configGeneral.qml:138
+#: package/contents/ui/configGeneral.qml:138
 msgid "Negative = sunken/inset, 0 = flat, positive = raised"
 msgstr "Отрицательное = вдавленное, 0 = плоское, положительное = приподнятое"
 
-#: hive-package/contents/ui/configGeneral.qml:142
+#: package/contents/ui/configGeneral.qml:142
 msgid "Grid padding:"
 msgstr "Отступ сетки:"
 
-#: hive-package/contents/ui/configGeneral.qml:148
+#: package/contents/ui/configGeneral.qml:148
 msgid "Empty space between the honeycomb and the widget edge"
 msgstr "Пустое пространство между сотами и краем виджета"
 
-#: hive-package/contents/ui/configGeneral.qml:152
+#: package/contents/ui/configGeneral.qml:152
 msgid "Placeholder color:"
 msgstr "Цвет заполнителя:"
 
-#: hive-package/contents/ui/configGeneral.qml:167
-#: hive-package/contents/ui/configGeneral.qml:198
+#: package/contents/ui/configGeneral.qml:167
+#: package/contents/ui/configGeneral.qml:198
 msgid "Choose…"
 msgstr "Выбрать…"
 
-#: hive-package/contents/ui/configGeneral.qml:173
+#: package/contents/ui/configGeneral.qml:173
 msgid "Fallback text size:"
 msgstr "Размер запасного текста:"
 
-#: hive-package/contents/ui/configGeneral.qml:179
+#: package/contents/ui/configGeneral.qml:179
 msgid "Used for slots with a command but no icon image"
 msgstr "Используется для слотов с командой, но без изображения значка"
 
-#: hive-package/contents/ui/configGeneral.qml:183
+#: package/contents/ui/configGeneral.qml:183
 msgid "Fallback text color:"
 msgstr "Цвет запасного текста:"
 
-#: hive-package/contents/ui/configGeneral.qml:205
+#: package/contents/ui/configGeneral.qml:205
 msgid "Slots"
 msgstr "Слоты"
 
-#: hive-package/contents/ui/configGeneral.qml:250
+#: package/contents/ui/configGeneral.qml:250
 msgid "Zoom %, crops in on images with a lot of transparent padding, or shrinks below 100% for images with none"
 msgstr "Масштаб %, обрезает изображения с большими прозрачными полями или уменьшает ниже 100% для изображений без полей"
 
-#: hive-package/contents/ui/configGeneral.qml:298
+#: package/contents/ui/configGeneral.qml:298
 msgid "Add %1 slot(s)"
 msgstr "Добавить %1 слот(ов)"
 
-#: hive-package/contents/ui/configGeneral.qml:338
+#: package/contents/ui/configGeneral.qml:338
 msgid "Choose a background image"
 msgstr "Выбрать фоновое изображение"
