@@ -385,6 +385,10 @@ Item {
                             shadowLoader.active = false
                             shadowLoader.active = true
                         }
+                        function onRenderScaleChanged() {
+                            shadowLoader.active = false
+                            shadowLoader.active = true
+                        }
                     }
                 }
 
@@ -436,6 +440,10 @@ Item {
                     Connections {
                         target: full
                         function onBevelStrengthChanged() {
+                            highlightLoader.active = false
+                            highlightLoader.active = true
+                        }
+                        function onRenderScaleChanged() {
                             highlightLoader.active = false
                             highlightLoader.active = true
                         }
@@ -496,6 +504,13 @@ Item {
                     id: iconContent
                     anchors.fill: parent
                     opacity: 0
+                    // without its own layer here, MultiEffect's source:
+                    // capture below happens at this Item's native small
+                    // size — throwing away all the extra resolution the
+                    // Image inside rasterizes at via its own sourceSize
+                    layer.enabled: true
+                    layer.smooth: true
+                    layer.textureSize: Qt.size(Math.round(width * full.renderScale * Screen.devicePixelRatio), Math.round(height * full.renderScale * Screen.devicePixelRatio))
 
                     Rectangle {
                         id: placeholder
@@ -589,6 +604,27 @@ Item {
                     maskSpreadAtMin: 1.0
                 }
 
+                // hexMask/maskedIcon layer textures are captured once at
+                // whatever renderScale happened to be true at that moment —
+                // on a real panel/desktop placement the widget gets resized
+                // during layout negotiation after the first paint, and Qt
+                // doesn't reliably re-snapshot a layered item's texture just
+                // because layer.textureSize's bound value changed (same
+                // repaint bug as the bevel ShaderEffect below). A fixed
+                // plasmoidviewer -s size never hits this, which is why it
+                // looked fine there but blurry for real.
+                Connections {
+                    target: full
+                    function onRenderScaleChanged() {
+                        iconContent.layer.enabled = false
+                        iconContent.layer.enabled = true
+                        hexMask.layer.enabled = false
+                        hexMask.layer.enabled = true
+                        maskedIcon.layer.enabled = false
+                        maskedIcon.layer.enabled = true
+                    }
+                }
+
                 // A plain ShaderEffect here never repaints when only
                 // uStrength changes (confirmed with a guaranteed-fresh
                 // plasmoidviewer load, config-change signal firing correctly
@@ -604,6 +640,10 @@ Item {
                     Connections {
                         target: full
                         function onBevelStrengthChanged() {
+                            bevelLoader.active = false
+                            bevelLoader.active = true
+                        }
+                        function onRenderScaleChanged() {
                             bevelLoader.active = false
                             bevelLoader.active = true
                         }
