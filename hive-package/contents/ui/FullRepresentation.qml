@@ -537,6 +537,11 @@ Item {
                             mipmap: true
                             asynchronous: true
                             scale: (slot.modelData.zoom || 100) / 100
+                            // without this, SVG icons rasterize at a small
+                            // default size and get blurrily upscaled from
+                            // there — before renderScale/textureSize below
+                            // even come into play
+                            sourceSize: Qt.size(Math.round(width * full.renderScale * Screen.devicePixelRatio * scale), Math.round(height * full.renderScale * Screen.devicePixelRatio * scale))
                         }
                     }
                 }
