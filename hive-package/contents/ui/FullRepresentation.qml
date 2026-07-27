@@ -360,6 +360,13 @@ Item {
                     id: iconContent
                     anchors.fill: parent
                     opacity: 0
+                    // without its own layer here, MultiEffect's source:
+                    // capture below happens at this Item's native small
+                    // size — throwing away all the extra resolution the
+                    // Image inside rasterizes at via its own sourceSize
+                    layer.enabled: true
+                    layer.smooth: true
+                    layer.textureSize: Qt.size(Math.round(width * full.renderScale * Screen.devicePixelRatio), Math.round(height * full.renderScale * Screen.devicePixelRatio))
 
                     Rectangle {
                         id: placeholder
@@ -446,6 +453,26 @@ Item {
                     maskSource: hexMask
                     maskThresholdMin: 0.5
                     maskSpreadAtMin: 1.0
+                }
+
+                // hexMask/maskedIcon layer textures are captured once at
+                // whatever renderScale happened to be true at that moment —
+                // on a real panel/desktop placement the widget gets resized
+                // during layout negotiation after the first paint, and Qt
+                // doesn't reliably re-snapshot a layered item's texture just
+                // because layer.textureSize's bound value changed. A fixed
+                // plasmoidviewer -s size never hits this, which is why it
+                // looked fine there but blurry for real.
+                Connections {
+                    target: full
+                    function onRenderScaleChanged() {
+                        iconContent.layer.enabled = false
+                        iconContent.layer.enabled = true
+                        hexMask.layer.enabled = false
+                        hexMask.layer.enabled = true
+                        maskedIcon.layer.enabled = false
+                        maskedIcon.layer.enabled = true
+                    }
                 }
 
                 ShaderEffect {
