@@ -660,6 +660,10 @@ Item {
                     cursorShape: Qt.PointingHandCursor
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     drag.axis: Drag.XAndYAxis
+                    hoverEnabled: true
+                    QtControls.ToolTip.visible: containsMouse && slot.modelData.command
+                    QtControls.ToolTip.text: full.labelFor(slot.modelData.command)
+                    QtControls.ToolTip.delay: Kirigami.Units.toolTipDelay
                     // Only left-button presses drag — a right-press never
                     // sets a drag.target, so right-click still opens the
                     // editor untouched. QtQuick already skips onClicked
