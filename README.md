@@ -50,3 +50,9 @@ Can also be built and installed system-wide via CMake:
 ```bash
 cmake -B build && cmake --build build && sudo cmake --install build
 ```
+
+## Show us your rice
+
+Got KHoneycomb set up on your desktop? Post a screenshot in
+[Show and tell](https://github.com/Agundur-KDE/KHoneycomb/discussions/categories/show-and-tell) —
+background image, bevel setting, hexagon layout, whatever you landed on.
