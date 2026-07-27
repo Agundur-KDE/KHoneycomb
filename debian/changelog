@@ -1,0 +1,11 @@
+khoneycomb (0.2.0-1) unstable; urgency=medium
+
+  * First automated .deb/.rpm/.plasmoid release via GitHub Actions.
+  * Renamed the plasmoid from the internal working name KHiveLaunch to
+    KHoneycomb, matching the repo — the old single-hexagon-per-instance
+    KHoneycomb plasmoid is retired, this is now the one and only widget.
+  * Configurable background image, adjustable neumorphic 3D bevel,
+    grid padding, hover tooltips, drag-to-reorder.
+  * Category corrected to "Application Launchers".
+
+ -- Agundur <info@agundur.de>  Mon, 27 Jul 2026 14:00:00 +0200

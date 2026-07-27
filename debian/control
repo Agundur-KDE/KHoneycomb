@@ -1,0 +1,21 @@
+Source: khoneycomb
+Section: kde
+Priority: optional
+Maintainer: Agundur <info@agundur.de>
+Build-Depends: debhelper-compat (= 13),
+ cmake, extra-cmake-modules, pkg-kde-tools, gettext, pkg-config,
+ qt6-base-dev, qt6-declarative-dev, qt6-declarative-dev-tools, qt6-base-dev-tools,
+ libkf6i18n-dev,
+ appstream
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/Agundur-KDE/KHoneycomb
+
+Package: khoneycomb
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: KDE Plasma 6 application launcher widget, a honeycomb of hexagons
+ KHoneycomb fills one widget with a whole configurable grid of hexagon
+ launcher tiles, tiled edge-to-edge. Adjustable neumorphic 3D bevel,
+ optional background image, per-tile icon/command/zoom/color, and
+ drag-to-reorder. Translated into German, Spanish, French and Russian.
