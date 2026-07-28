@@ -1,4 +1,7 @@
-# KHoneycomb
+<div align="center">
+  <img src="package/contents/icons/khoneycomb_128x128.png" width="80" alt="KHoneycomb logo">
+  <h1>KHoneycomb</h1>
+</div>
 
 <p align="center">
   <img src="assets/screenshot1.png" alt="Honeycomb of hexagon launcher icons on the KDE Plasma desktop" width="600" /><br />
