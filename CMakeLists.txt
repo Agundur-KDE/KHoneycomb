@@ -8,6 +8,7 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 include(KDEInstallDirs)
 include(KDECMakeSettings)
+include(ECMInstallIcons)
 
 find_package(KF6 ${KF6_MIN_VERSION} REQUIRED COMPONENTS
     I18n
@@ -26,10 +27,10 @@ ki18n_install(translate
 )
 
 ecm_install_icons(ICONS
-    icons/hi64-apps-khoneycomb.png
-    icons/hi128-apps-khoneycomb.png
-    icons/hi256-apps-khoneycomb.png
-    icons/hi512-apps-khoneycomb.png
+    icons/64-apps-khoneycomb.png
+    icons/128-apps-khoneycomb.png
+    icons/256-apps-khoneycomb.png
+    icons/512-apps-khoneycomb.png
     DESTINATION ${KDE_INSTALL_ICONDIR}
     THEME hicolor
 )

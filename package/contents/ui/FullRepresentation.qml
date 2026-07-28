@@ -14,6 +14,7 @@ import QtQuick.Effects
 import org.kde.plasma.plasmoid
 import org.kde.plasma.plasma5support as Plasma5Support
 import org.kde.kirigami as Kirigami
+import org.kde.iconthemes as KIconThemes
 
 Item {
     id: full
@@ -165,6 +166,23 @@ Item {
         onNewData: (sourceName, data) => disconnectSource(sourceName)
     }
 
+    // Resolves a bare icon-theme name (e.g. "okular", as returned by
+    // KIconThemes.IconDialog for a theme pick rather than a custom file)
+    // to an actual file path via kiconfinder6 — the same lookup KDE's own
+    // apps use, more reliable than guessing at a QML image-provider URL
+    // scheme (image://icontheme/... confirmed NOT to resolve here).
+    Plasma5Support.DataSource {
+        id: iconResolver
+        engine: "executable"
+        connectedSources: []
+        onNewData: (sourceName, data) => {
+            disconnectSource(sourceName)
+            const out = (data["stdout"] || "").trim()
+            if (out)
+                slotEditImage.text = out
+        }
+    }
+
     // Right-click editor for a single slot's icon/command — a structural
     // edit (removing/reordering slots) stays in the full config dialog,
     // this is just the quick "change what this one cell launches" path.
@@ -298,7 +316,7 @@ Item {
                 }
                 QtControls.Button {
                     icon.name: "document-open"
-                    onClicked: slotEditImageDialog.open()
+                    onClicked: slotEditIconDialog.open()
                 }
             }
             QtControls.TextField {
@@ -360,11 +378,23 @@ Item {
             }
         }
 
-        FileDialog {
-            id: slotEditImageDialog
-            title: i18n("Choose an icon image")
-            nameFilters: [i18n("Images (*.png *.jpg *.jpeg *.webp *.svg)")]
-            onAccepted: slotEditImage.text = selectedFile.toString().replace("file://", "")
+        // KIconThemes' picker instead of a plain file dialog — browse by
+        // category/search through installed theme icons, with a "Browse…"
+        // button of its own for a custom file, so this covers both cases
+        // the old plain FileDialog handled plus proper icon browsing.
+        KIconThemes.IconDialog {
+            id: slotEditIconDialog
+            // Picking a theme icon (as opposed to "Browse…" for a custom
+            // file) returns a bare name like "okular", not a path — Image
+            // can't load that directly, needs resolving to a real file
+            // first (see iconResolver above). A custom-file pick already
+            // comes back as an absolute path, nothing to resolve.
+            onIconNameChanged: {
+                if (iconName.startsWith("/"))
+                    slotEditImage.text = iconName
+                else
+                    iconResolver.connectSource("kiconfinder6 '" + iconName + "'")
+            }
         }
 
         ColorDialog {

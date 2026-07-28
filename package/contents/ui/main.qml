@@ -13,7 +13,6 @@ import org.kde.plasma.plasmoid
 PlasmoidItem {
     id: root
 
-    preferredRepresentation: fullRepresentation
     Plasmoid.title: i18n("KHoneycomb")
     Plasmoid.status: PlasmaCore.Types.ActiveStatus
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
@@ -26,8 +25,23 @@ PlasmoidItem {
         Layout.minimumHeight: full.gridHeight
     }
 
-    compactRepresentation: MouseArea {
-        implicitWidth: Kirigami.Units.iconSizes.medium
-        implicitHeight: Kirigami.Units.iconSizes.medium
+    // No preferredRepresentation override — the honeycomb grid needs real
+    // space to read as hexagons rather than a squished mess, so a panel
+    // gets the compact icon (click to pop the full grid open) while the
+    // desktop gets the full grid directly, same as any other Plasma applet.
+    compactRepresentation: Item {
+        id: compactView
+
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: root.expanded = !root.expanded
+        }
+
+        Kirigami.Icon {
+            anchors.fill: parent
+            source: "khoneycomb"
+        }
     }
 }
