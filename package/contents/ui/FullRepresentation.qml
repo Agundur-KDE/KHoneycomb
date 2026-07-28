@@ -381,6 +381,7 @@ Item {
                 Loader {
                     id: shadowLoader
                     anchors.fill: parent
+                    visible: full.bevelStrength > 0
                     sourceComponent: shadowComponent
 
                     Connections {
@@ -427,6 +428,7 @@ Item {
 
                         MultiEffect {
                             anchors.fill: shadowShape
+                            visible: full.bevelStrength > 0
                             opacity: full.bevelStrength > 0 ? 0.45 : 0
                             source: shadowShape
                             blurEnabled: true
@@ -439,6 +441,7 @@ Item {
                 Loader {
                     id: highlightLoader
                     anchors.fill: parent
+                    visible: full.bevelStrength > 0
                     sourceComponent: highlightComponent
 
                     Connections {
@@ -482,6 +485,7 @@ Item {
                         MultiEffect {
                             anchors.fill: highlightShape
                             source: highlightShape
+                            visible: full.bevelStrength > 0
                             opacity: full.bevelStrength > 0 ? 0.07 : 0
                             blurEnabled: true
                             blur: 0.95
@@ -491,6 +495,7 @@ Item {
                         MultiEffect {
                             anchors.fill: highlightShape
                             source: highlightShape
+                            visible: full.bevelStrength > 0
                             opacity: full.bevelStrength > 0 ? 0.15 : 0
                             blurEnabled: true
                             blur: 0.8
@@ -706,6 +711,7 @@ Item {
                 Shape {
                     anchors.fill: parent
                     antialiasing: true
+                    visible: full.bevelStrength < 0 && Qt.color(slot.modelData.color || Plasmoid.configuration.placeholderColor).a > 0
                     opacity: full.bevelStrength < 0 ? 1 : 0
                     ShapePath {
                         fillColor: "transparent"
