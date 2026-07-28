@@ -553,6 +553,7 @@ Item {
                             Rectangle {
                                 id: placeholder
                                 anchors.fill: parent
+                                visible: color.a > 0
                                 color: slot.modelData.color || Plasmoid.configuration.placeholderColor
                             }
 
