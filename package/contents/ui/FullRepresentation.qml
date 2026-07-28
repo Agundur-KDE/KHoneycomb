@@ -175,6 +175,10 @@ Item {
         slotEditCommand.text = s.command || ""
         slotEditZoom.value = s.zoom || 100
         slotEditPopup.slotColor = s.color || ""
+        slotEditPopup.origImage = s.image || ""
+        slotEditPopup.origCommand = s.command || ""
+        slotEditPopup.origZoom = s.zoom || 100
+        slotEditPopup.origColor = s.color || ""
         slotEditPopup.open()
     }
 
@@ -217,10 +221,45 @@ Item {
         id: slotEditPopup
         property int targetIndex: -1
         property string slotColor: ""
+        property string origImage: ""
+        property string origCommand: ""
+        property real origZoom: 100
+        property string origColor: ""
+        property bool hasChanges: false
         modal: true
         focus: true
         x: (full.width - width) / 2
         y: (full.height - height) / 2
+
+        // Polled instead of a live binding on slotEditImage.text/slotEditCommand.text:
+        // pasting via the native Qt text-field context menu doesn't reliably fire
+        // textChanged in this environment (confirmed — Save stayed disabled after a
+        // paste, only the next keypress picked up the already-pasted value), so a
+        // pure dependency-tracked binding can miss it. Polling re-reads the actual
+        // current text every tick regardless of whether a notify signal fired.
+        Timer {
+            interval: 300
+            running: slotEditPopup.opened
+            repeat: true
+            triggeredOnStart: true
+            onTriggered: slotEditPopup.hasChanges = slotEditImage.text !== slotEditPopup.origImage
+                || slotEditCommand.text !== slotEditPopup.origCommand
+                || slotEditZoom.value !== slotEditPopup.origZoom
+                || slotEditPopup.slotColor !== slotEditPopup.origColor
+        }
+
+        function doSave() {
+            if (!hasChanges)
+                return
+            full.writeSlot(targetIndex, slotEditImage.text, slotEditCommand.text, slotEditZoom.value, slotColor)
+            origImage = slotEditImage.text
+            origCommand = slotEditCommand.text
+            origZoom = slotEditZoom.value
+            origColor = slotColor
+            hasChanges = false
+        }
+        Keys.onReturnPressed: doSave()
+        Keys.onEnterPressed: doSave()
 
         ColumnLayout {
             // Drag handle: popup starts centered on the clicked hex, but
@@ -255,6 +294,7 @@ Item {
                     id: slotEditImage
                     Layout.preferredWidth: 220
                     placeholderText: i18n("Icon image")
+                    onAccepted: slotEditPopup.doSave()
                 }
                 QtControls.Button {
                     icon.name: "document-open"
@@ -265,6 +305,7 @@ Item {
                 id: slotEditCommand
                 Layout.fillWidth: true
                 placeholderText: i18n("Command")
+                onAccepted: slotEditPopup.doSave()
             }
             RowLayout {
                 QtControls.Label { text: i18n("Zoom:") }
@@ -304,7 +345,9 @@ Item {
             RowLayout {
                 QtControls.Button {
                     text: i18n("Save")
-                    onClicked: full.writeSlot(slotEditPopup.targetIndex, slotEditImage.text, slotEditCommand.text, slotEditZoom.value, slotEditPopup.slotColor)
+                    highlighted: true
+                    enabled: slotEditPopup.hasChanges
+                    onClicked: slotEditPopup.doSave()
                 }
                 QtControls.Button {
                     text: i18n("Clear")

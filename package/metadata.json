@@ -10,7 +10,7 @@
         "BugReportUrl": "https://github.com/Agundur-KDE/KHoneycomb/issues",
         "Category": "Application Launchers",
         "Description": "A single-widget honeycomb of launcher slots, tiled edge-to-edge",
-        "Icon": "input-gaming",
+        "Icon": "khoneycomb",
         "Id": "de.agundur.khoneycomb",
         "License": "GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL",
         "Name": "KHoneycomb",

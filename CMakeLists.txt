@@ -25,4 +25,13 @@ ki18n_install(translate
     INSTALL_DESTINATION ${KDE_INSTALL_LOCALEDIR}
 )
 
+ecm_install_icons(ICONS
+    icons/hi64-apps-khoneycomb.png
+    icons/hi128-apps-khoneycomb.png
+    icons/hi256-apps-khoneycomb.png
+    icons/hi512-apps-khoneycomb.png
+    DESTINATION ${KDE_INSTALL_ICONDIR}
+    THEME hicolor
+)
+
 install(DIRECTORY package/ DESTINATION ${KDE_INSTALL_DATADIR}/plasma/plasmoids/${PLASMOID_ID})
