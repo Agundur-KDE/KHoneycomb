@@ -16,7 +16,7 @@ PlasmoidItem {
     preferredRepresentation: fullRepresentation
     Plasmoid.title: i18n("KHoneycomb")
     Plasmoid.status: PlasmaCore.Types.ActiveStatus
-    Plasmoid.backgroundHints: PlasmaCore.Types.ConfigurableBackground
+    Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
     toolTipMainText: Plasmoid.title
 
     fullRepresentation: FullRepresentation {
