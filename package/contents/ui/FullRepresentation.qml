@@ -35,6 +35,15 @@ Item {
 
     property var slotList: []
 
+    // Trash counts as one more slot for every layout calculation (column
+    // balancing AND position) when enabled, so it always lands at a
+    // consistent, non-overlapping "next" tessellation spot instead of the
+    // column-count math being optimized for N real hexes while positions
+    // get computed for N+1 (that mismatch was the actual cause of an
+    // earlier overlap bug — the fix is keeping both in sync, not avoiding
+    // the shared position formula).
+    readonly property int layoutSlotCount: slotList.length + (Plasmoid.configuration.showTrash ? 1 : 0)
+
     // Same offset-grid extent math as gridWidth/gridHeight below, but for
     // a hypothetical column count c instead of the live full.columns -
     // used to score candidates in bestColumns() without a binding loop.
@@ -44,7 +53,7 @@ Item {
         const colStep = 1.5 * r + spacing
         const rowStep = hexRatio * hexSize + spacing
         let maxX = 0, maxY = 0
-        for (let i = 0; i < slotList.length; i++) {
+        for (let i = 0; i < layoutSlotCount; i++) {
             const col = i % c
             const row = Math.floor(i / c)
             const lx = col * colStep
@@ -58,7 +67,7 @@ Item {
     }
 
     function bestColumns() {
-        const n = slotList.length
+        const n = layoutSlotCount
         if (n <= 1) return 1
         // No live size yet (not placed/resized): fall back to a roughly
         // square arrangement instead of reading full.width/height, which
@@ -106,15 +115,20 @@ Item {
         return pointyTop ? Qt.point(ly, lx) : Qt.point(lx, ly)
     }
 
+    // Trash's own position is just the next slot in the same tessellation
+    // real hexes use — consistent now that layoutSlotCount (above) keeps
+    // column-balancing and position math in sync.
+    readonly property point trashPos: slotPos(slotList.length)
+
     readonly property int gridWidth: {
         let maxX = 0
-        for (let i = 0; i < slotList.length; i++)
+        for (let i = 0; i < layoutSlotCount; i++)
             maxX = Math.max(maxX, slotPos(i).x + hexW)
         return Math.max(hexW, Math.round(maxX))
     }
     readonly property int gridHeight: {
         let maxY = 0
-        for (let i = 0; i < slotList.length; i++)
+        for (let i = 0; i < layoutSlotCount; i++)
             maxY = Math.max(maxY, slotPos(i).y + hexH)
         return Math.max(hexH, Math.round(maxY))
     }
@@ -827,6 +841,62 @@ Item {
                             executable.connectSource(slot.modelData.command)
                         }
                     }
+                }
+            }
+        }
+
+        // Trash rendered as one more hex-grid citizen, at slotPos(slotList
+        // .length) — the exact next tessellation position, same
+        // spacing/offset math as every real hex, inside the same `grid`
+        // Item so it's subject to the identical scale transform. No
+        // separately reserved block: gridWidth/gridHeight already account
+        // for this position via slotCountForLayout above, so it just folds
+        // into the natural honeycomb shape instead of adding a rectangular
+        // strip. The actual feature is the DropArea below: real external
+        // drag-and-drop (files dragged in from Dolphin), unrelated to the
+        // hexagons' own internal drag.target-based reorder mechanism.
+        Item {
+            id: trashSlot
+            visible: Plasmoid.configuration.showTrash
+            readonly property point pos: full.trashPos
+            x: pos.x
+            y: pos.y
+            width: full.hexW
+            height: full.hexH
+
+            Rectangle {
+                anchors.fill: parent
+                radius: width * 0.15
+                color: trashDrop.containsDrag ? "#40ffffff" : "#20000000"
+                border.color: trashDrop.containsDrag ? "#ffffff" : "transparent"
+                border.width: 2
+            }
+
+            Kirigami.Icon {
+                anchors.fill: parent
+                anchors.margins: parent.width * 0.2
+                source: "user-trash"
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                hoverEnabled: true
+                QtControls.ToolTip.visible: containsMouse
+                QtControls.ToolTip.text: i18n("Open trash · drop files here to delete them")
+                QtControls.ToolTip.delay: Kirigami.Units.toolTipDelay
+                onClicked: executable.connectSource("dolphin trash:/")
+            }
+
+            DropArea {
+                id: trashDrop
+                anchors.fill: parent
+                onDropped: (drop) => {
+                    if (drop.hasUrls) {
+                        const quoted = drop.urls.map(u => "'" + String(u).replace(/'/g, "'\\''") + "'").join(" ")
+                        executable.connectSource("kioclient5 move " + quoted + " trash:/")
+                    }
+                    drop.accept()
                 }
             }
         }

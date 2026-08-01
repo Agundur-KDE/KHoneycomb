@@ -25,6 +25,7 @@ KCM.SimpleKCM {
     property int cfg_backgroundDim
     property int cfg_bevelStrength
     property int cfg_gridPadding
+    property bool cfg_showTrash
     property color cfg_textColor
     property int cfg_textSize
     property string cfg_slots
@@ -146,6 +147,15 @@ KCM.SimpleKCM {
             onValueModified: cfg_gridPadding = value
             QtControls.ToolTip.visible: hovered
             QtControls.ToolTip.text: i18n("Empty space between the honeycomb and the widget edge")
+        }
+
+        QtControls.CheckBox {
+            Kirigami.FormData.label: i18n("Trash:")
+            text: i18n("Show trash icon")
+            checked: cfg_showTrash
+            onToggled: cfg_showTrash = checked
+            QtControls.ToolTip.visible: hovered
+            QtControls.ToolTip.text: i18n("Drag a hexagon onto it to clear that slot; click it to open the real trash")
         }
 
         RowLayout {

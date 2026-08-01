@@ -60,5 +60,9 @@
     <entry name="slots" type="String">
       <default>[{"image":"/usr/share/icons/hicolor/scalable/apps/org.kde.dolphin.svg","command":"dolphin","zoom":100,"color":""},{"image":"/usr/share/icons/hicolor/256x256/apps/firefox.png","command":"firefox","zoom":100,"color":""},{"image":"","command":"okular","zoom":100,"color":""}]</default>
     </entry>
+    <!-- shows a trash-can icon beside the grid; dragging a hexagon onto it clears that slot -->
+    <entry name="showTrash" type="Bool">
+      <default>false</default>
+    </entry>
   </group>
 </kcfg>
