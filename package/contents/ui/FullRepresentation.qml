@@ -241,6 +241,23 @@ Item {
             const dist = dx * dx + dy * dy
             if (dist < nearestDist) { nearestDist = dist; nearest = i }
         }
+        // Trash is just one more candidate in the same nearest-neighbor
+        // check real slots use — whichever center the drop lands closest
+        // to wins. Closer to trash than to any real slot: delete instead
+        // of reorder. Keeps this in sync with layoutSlotCount/trashPos
+        // above instead of a separate hit-test with its own geometry.
+        if (Plasmoid.configuration.showTrash) {
+            const tp = full.trashPos
+            const tdx = tp.x + full.hexW / 2 - dc.x
+            const tdy = tp.y + full.hexH / 2 - dc.y
+            const trashDist = tdx * tdx + tdy * tdy
+            if (trashDist < nearestDist) {
+                const arr = JSON.parse(JSON.stringify(full.slotList))
+                arr.splice(fromIndex, 1)
+                Plasmoid.configuration.slots = JSON.stringify(arr)
+                return
+            }
+        }
         if (nearest === fromIndex)
             return
         const arr = JSON.parse(JSON.stringify(full.slotList))
@@ -852,9 +869,11 @@ Item {
         // separately reserved block: gridWidth/gridHeight already account
         // for this position via slotCountForLayout above, so it just folds
         // into the natural honeycomb shape instead of adding a rectangular
-        // strip. The actual feature is the DropArea below: real external
-        // drag-and-drop (files dragged in from Dolphin), unrelated to the
-        // hexagons' own internal drag.target-based reorder mechanism.
+        // strip. Two independent drop paths land here: the DropArea below
+        // (real external files dragged in from Dolphin, moved to trash:/)
+        // and dropSlot() above (an existing hexagon dragged onto this tile
+        // via the internal drag.target reorder mechanism, which deletes
+        // the slot instead of reordering it).
         Item {
             id: trashSlot
             visible: Plasmoid.configuration.showTrash
