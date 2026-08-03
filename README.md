@@ -59,3 +59,9 @@ cmake -B build && cmake --build build && sudo cmake --install build
 Got KHoneycomb set up on your desktop? Post a screenshot in
 [Show and tell](https://github.com/Agundur-KDE/KHoneycomb/discussions/categories/show-and-tell) —
 background image, bevel setting, hexagon layout, whatever you landed on.
+
+Complete your KDE setup — with an ever-growing [wallpaper collection](https://github.com/Agundur-KDE/Wallpapers).
+
+<a href="https://github.com/Agundur-KDE/Wallpapers">
+  <img src="https://raw.githubusercontent.com/Agundur-KDE/Wallpapers/main/previews/anime-tux-4k-preview.jpg" alt="anime-tux wallpaper: stylized Tux character with a purple aura in front of a night city skyline" width="300" />
+</a>
