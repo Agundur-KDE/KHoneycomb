@@ -45,9 +45,9 @@ git clone https://github.com/Agundur-KDE/KHoneycomb.git
 kpackagetool6 --type Plasma/Applet --install KHoneycomb/package/
 ```
 
-Then right-click your desktop → **Enter Edit Mode** → **Add Widgets...**
-(on a panel it's a direct **Add or Manage Widgets...** entry), search for
-"KHoneycomb", and drag it into place.
+Then right-click your desktop → **Enter Edit Mode** → **Add or Manage
+Widgets...** (on a panel it's a direct context-menu entry, no edit mode
+needed), search for "KHoneycomb", and drag it into place.
 
 ### openSUSE Tumbleweed
 
