@@ -140,6 +140,13 @@ jobs:
           ls -la ../rpms
 
       - name: Create or update GitHub Release with RPMs
+        # OBS bumps its own internal release counter (the "-N.M" suffix)
+        # on every rebuild, so the RPM filename changes each time even
+        # for the same version — `gh release upload --clobber` only
+        # replaces an asset with the SAME name, so old-numbered RPMs from
+        # a previous run just pile up instead of being replaced. Delete
+        # any existing khoneycomb-*.rpm assets first so only this run's
+        # pair remains.
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -147,4 +154,7 @@ jobs:
           TAG="${{ steps.ver.outputs.tag }}"
           gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 \
             || gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "$TAG" --generate-notes
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' \
+            | grep -E '^khoneycomb-.*\.rpm$' \
+            | xargs -r -I{} gh release delete-asset "$TAG" "{}" --repo "$GITHUB_REPOSITORY" -y
           gh release upload "$TAG" rpms/*.rpm --repo "$GITHUB_REPOSITORY" --clobber
