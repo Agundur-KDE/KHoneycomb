@@ -35,15 +35,6 @@ Item {
 
     property var slotList: []
 
-    // Trash counts as one more slot for every layout calculation (column
-    // balancing AND position) when enabled, so it always lands at a
-    // consistent, non-overlapping "next" tessellation spot instead of the
-    // column-count math being optimized for N real hexes while positions
-    // get computed for N+1 (that mismatch was the actual cause of an
-    // earlier overlap bug — the fix is keeping both in sync, not avoiding
-    // the shared position formula).
-    readonly property int layoutSlotCount: slotList.length + (Plasmoid.configuration.showTrash ? 1 : 0)
-
     // Same offset-grid extent math as gridWidth/gridHeight below, but for
     // a hypothetical column count c instead of the live full.columns -
     // used to score candidates in bestColumns() without a binding loop.
@@ -53,7 +44,9 @@ Item {
         const colStep = 1.5 * r + spacing
         const rowStep = hexRatio * hexSize + spacing
         let maxX = 0, maxY = 0
-        for (let i = 0; i < layoutSlotCount; i++) {
+        // Real icons only, matching bestColumns() above — this is purely
+        // a candidate-scoring helper for the real layout's own aspect fit.
+        for (let i = 0; i < slotList.length; i++) {
             const col = i % c
             const row = Math.floor(i / c)
             const lx = col * colStep
@@ -67,7 +60,10 @@ Item {
     }
 
     function bestColumns() {
-        const n = layoutSlotCount
+        // Real icons only — trash must never influence the aspect-fit
+        // column choice, or it'd sometimes claim an extra column that
+        // isn't actually needed (see trashPos below for why).
+        const n = slotList.length
         if (n <= 1) return 1
         // No live size yet (not placed/resized): fall back to a roughly
         // square arrangement instead of reading full.width/height, which
@@ -103,11 +99,14 @@ Item {
     // spacing just widens both step distances by a flat pixel amount — not
     // a geometrically exact uniform gap in all six directions, but close
     // enough to see/feel and cheap; 0 reproduces the old flush tiling.
-    function slotPos(index) {
+    // Split out from slotPos() below so trash (see trashNaturalPos) can ask
+    // for an explicit row/col directly, without going through index modulo
+    // — that modulo is exactly what wraps to a new row once the row is
+    // nominally "full", which is correct for real icons but wrong for
+    // trash (see trashNaturalPos comment).
+    function slotPosRC(row, col) {
         const spacing = Plasmoid.configuration.spacing
         const r = hexSize / 2
-        const col = index % columns
-        const row = Math.floor(index / columns)
         const colStep = 1.5 * r + spacing
         const rowStep = hexRatio * hexSize + spacing
         const lx = col * colStep
@@ -115,21 +114,74 @@ Item {
         return pointyTop ? Qt.point(ly, lx) : Qt.point(lx, ly)
     }
 
-    // Trash's own position is just the next slot in the same tessellation
-    // real hexes use — consistent now that layoutSlotCount (above) keeps
-    // column-balancing and position math in sync.
-    readonly property point trashPos: slotPos(slotList.length)
+    function slotPos(index) {
+        return slotPosRC(Math.floor(index / columns), index % columns)
+    }
 
+    // Deliberately NOT a fresh slotPosRC(row, col) lookup for "the next
+    // cell": that recomputes col-parity zigzag for a brand new column,
+    // which for flat-top can shift Y away from every real icon in the
+    // row (e.g. landing on an odd column that none of the real icons
+    // used), and for pointy-top the axis swap means "row" maps to
+    // screen-X and "col" to screen-Y — so advancing what looks like "one
+    // column over" in index terms actually moves DOWN on screen instead
+    // of staying in the row, which was the flat-top-only-looking bug
+    // that turned out to affect pointy-top just as much, differently.
+    //
+    // Instead: copy the exact Y of the last real icon (whatever zigzag
+    // it already has, that's what "same row" means — align-items:
+    // center in spirit, not a fresh offset calculation) and advance X by
+    // exactly one flow-step — colStep for flat-top (columns are the
+    // horizontal axis there), rowStep for pointy-top (rows are the
+    // horizontal axis after the swap). Works identically whether there's
+    // 1 column, 1 row, or many of either.
+    readonly property point trashNaturalPos: {
+        if (slotList.length === 0)
+            return slotPosRC(0, 0)
+        const lastPos = slotPos(slotList.length - 1)
+        const spacing = Plasmoid.configuration.spacing
+        const r = hexSize / 2
+        const step = pointyTop ? (hexRatio * hexSize + spacing) : (1.5 * r + spacing)
+        return Qt.point(lastPos.x + step, lastPos.y)
+    }
+
+    // Pulled out to the actual right edge of the widget whenever the
+    // icons' row has unused space — e.g. a wide, short panel where
+    // renderScale is height-bound and the real icons don't need the full
+    // width. Same idea as CSS "float: right". full.width is real screen
+    // pixels, so it's converted back into the grid's own pre-scale
+    // logical units (same units slotPosRC returns) before comparing.
+    //
+    // When the row is already full width-wise (the squeezed/multi-row
+    // case), edgeX comes out <= the natural position and max() just
+    // keeps the safe, non-overlapping natural slot — no artificial gap.
+    readonly property point trashPos: {
+        if (full.renderScale <= 0)
+            return trashNaturalPos
+        const edgeX = (full.width - Plasmoid.configuration.gridPadding * 2) / full.renderScale - full.hexW
+        return Qt.point(Math.max(trashNaturalPos.x, edgeX), trashNaturalPos.y)
+    }
+
+    // Real slots via slotPos (wrapping is correct there — that's how a
+    // full row is supposed to continue onto the next one), trash via
+    // trashNaturalPos (deliberately non-wrapping, see its comment) added
+    // on top only when shown — NOT slotPos(slotList.length), which is
+    // exactly the wrap that caused gridHeight to reserve a whole extra
+    // row trash would never actually render in.
     readonly property int gridWidth: {
         let maxX = 0
-        for (let i = 0; i < layoutSlotCount; i++)
+        for (let i = 0; i < slotList.length; i++)
             maxX = Math.max(maxX, slotPos(i).x + hexW)
+        if (Plasmoid.configuration.showTrash)
+            maxX = Math.max(maxX, trashNaturalPos.x + hexW)
         return Math.max(hexW, Math.round(maxX))
     }
     readonly property int gridHeight: {
         let maxY = 0
-        for (let i = 0; i < layoutSlotCount; i++)
+        for (let i = 0; i < slotList.length; i++)
             maxY = Math.max(maxY, slotPos(i).y + hexH)
+        if (Plasmoid.configuration.showTrash)
+            maxY = Math.max(maxY, trashNaturalPos.y + hexH)
         return Math.max(hexH, Math.round(maxY))
     }
 
@@ -244,8 +296,8 @@ Item {
         // Trash is just one more candidate in the same nearest-neighbor
         // check real slots use — whichever center the drop lands closest
         // to wins. Closer to trash than to any real slot: delete instead
-        // of reorder. Keeps this in sync with layoutSlotCount/trashPos
-        // above instead of a separate hit-test with its own geometry.
+        // of reorder. Uses trashPos (the actual rendered/pulled position)
+        // rather than a separate hit-test with its own geometry.
         if (Plasmoid.configuration.showTrash) {
             const tp = full.trashPos
             const tdx = tp.x + full.hexW / 2 - dc.x
@@ -862,18 +914,17 @@ Item {
             }
         }
 
-        // Trash rendered as one more hex-grid citizen, at slotPos(slotList
-        // .length) — the exact next tessellation position, same
-        // spacing/offset math as every real hex, inside the same `grid`
-        // Item so it's subject to the identical scale transform. No
+        // Trash rendered at full.trashPos (see above: same row as the last
+        // real icon, pulled to the widget's right edge when there's unused
+        // space in that row) — inside the same `grid` Item so it's subject
+        // to the identical scale transform as every real hex. No
         // separately reserved block: gridWidth/gridHeight already account
-        // for this position via slotCountForLayout above, so it just folds
-        // into the natural honeycomb shape instead of adding a rectangular
-        // strip. Two independent drop paths land here: the DropArea below
-        // (real external files dragged in from Dolphin, moved to trash:/)
-        // and dropSlot() above (an existing hexagon dragged onto this tile
-        // via the internal drag.target reorder mechanism, which deletes
-        // the slot instead of reordering it).
+        // for its fallback position (trashNaturalPos) above. Two
+        // independent drop paths land here: the DropArea below (real
+        // external files dragged in from Dolphin, moved to trash:/) and
+        // dropSlot() above (an existing hexagon dragged onto this tile via
+        // the internal drag.target reorder mechanism, which deletes the
+        // slot instead of reordering it).
         Item {
             id: trashSlot
             visible: Plasmoid.configuration.showTrash
@@ -893,7 +944,7 @@ Item {
 
             Kirigami.Icon {
                 anchors.fill: parent
-                anchors.margins: parent.width * 0.2
+                anchors.margins: parent.width * 0.08
                 source: "user-trash"
             }
 
