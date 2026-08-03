@@ -20,12 +20,24 @@ jobs:
           fetch-tags: true
 
       - name: Determine version from tag
+        # RPM's Version: field can't contain a hyphen (rpmbuild hard-errors:
+        # "Illegal char '-' in: Version") — v0.2.1-beta broke the very first
+        # prerelease tag build. Split at the first '-': the numeric part
+        # goes into Version, any suffix (beta, rc1, ...) goes into Release
+        # with the standard RPM "0." prerelease prefix so it still sorts
+        # BEFORE the eventual final release's "1%{?dist}".
         id: ver
         run: |
           set -euo pipefail
           TAG="${GITHUB_REF_NAME}"
+          RAW="${TAG#v}"
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
-          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+          echo "version=${RAW%%-*}" >> "$GITHUB_OUTPUT"
+          if [[ "$RAW" == *-* ]]; then
+            echo "release=0.${RAW#*-}%{?dist}" >> "$GITHUB_OUTPUT"
+          else
+            echo "release=1%{?dist}" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Install osc
         run: |
@@ -75,6 +87,7 @@ jobs:
           </services>
           SERVICE
           sed -i "s/^Version:.*/Version:        ${{ steps.ver.outputs.version }}/" KHoneycomb.spec
+          sed -i "s/^Release:.*/Release:        ${{ steps.ver.outputs.release }}/" KHoneycomb.spec
           cat _service
 
       - name: Commit to OBS
