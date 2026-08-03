@@ -1,3 +1,16 @@
+khoneycomb (0.2.1-1) unstable; urgency=medium
+
+  * Add compact (panel) representation.
+  * Add KIconThemes icon picker for the icon field, resolving theme
+    names to real paths.
+  * Add custom app icon, wired into metadata.json and the hicolor icon
+    theme.
+  * Add Description[de/es/fr/ru] to metadata.json.
+  * Fix: transparent tile placeholder rendered opaque white/black
+    instead of the desktop background.
+
+ -- Agundur <info@agundur.de>  Mon, 03 Aug 2026 13:20:00 +0200
+
 khoneycomb (0.2.0-1) unstable; urgency=medium
 
   * First automated .deb/.rpm/.plasmoid release via GitHub Actions.
