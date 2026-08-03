@@ -36,23 +36,47 @@ More translations are very welcome! The strings live in
 `translate/<lang>/plasma_applet_de.agundur.khoneycomb.po`, standard
 gettext format — copy an existing file as a starting point and open a PR.
 
-## Try it
+## Install
+
+### Quick install, no package manager
 
 ```bash
 git clone https://github.com/Agundur-KDE/KHoneycomb.git
 kpackagetool6 --type Plasma/Applet --install KHoneycomb/package/
-plasmoidviewer -a de.agundur.khoneycomb -s 700x400
+```
+
+Then right-click your desktop → **Enter Edit Mode** → **Add Widgets...**
+(on a panel it's a direct **Add or Manage Widgets...** entry), search for
+"KHoneycomb", and drag it into place.
+
+### openSUSE Tumbleweed
+
+Via the Open Build Service:
+
+```bash
+sudo zypper ar -f https://download.opensuse.org/repositories/home:/Agundur/openSUSE_Tumbleweed/home:Agundur.repo
+sudo zypper --gpg-auto-import-keys ref
+sudo zypper ref
+sudo zypper in khoneycomb
+```
+
+### Debian / Ubuntu
+
+Direct download from the [latest release](https://github.com/Agundur-KDE/KHoneycomb/releases/latest):
+
+```bash
+sudo apt install ./khoneycomb_*.deb
+```
+
+### System-wide via CMake
+
+```bash
+cmake -B build && cmake --build build && sudo cmake --install build
 ```
 
 Right-click a hexagon → Configure to add slots (icon image + launch
 command), or use the full config dialog for background image, bevel
 strength, and grid padding.
-
-Can also be built and installed system-wide via CMake:
-
-```bash
-cmake -B build && cmake --build build && sudo cmake --install build
-```
 
 ## Show us your rice
 
