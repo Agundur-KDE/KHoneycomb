@@ -135,6 +135,27 @@ Item {
     // horizontal axis there), rowStep for pointy-top (rows are the
     // horizontal axis after the swap). Works identically whether there's
     // 1 column, 1 row, or many of either.
+    // Same-row-plus-one-step keeps trash off the row it copies from, but
+    // hexagons interlock diagonally: with few enough columns, that step
+    // can still land close enough to a DIFFERENT real icon one row over
+    // to overlap it (hex height is bigger than half a row-step, that's
+    // just hexagon geometry). Checked against every OTHER real icon's
+    // rect (excludes slotList.length - 1, the reference icon trash's own
+    // position is derived from — that one is always "close" by design,
+    // same normal same-row adjacency every pair of real icons has, not a
+    // real collision). Any actual collision falls back to the plain
+    // sequential "next tessellation cell" instead, which gridWidth/
+    // gridHeight's own column-balanced math already guarantees is
+    // overlap-free.
+    function overlapsAnySlot(p) {
+        for (let i = 0; i < slotList.length - 1; i++) {
+            const q = slotPos(i)
+            if (Math.abs(p.x - q.x) < hexW && Math.abs(p.y - q.y) < hexH)
+                return true
+        }
+        return false
+    }
+
     readonly property point trashNaturalPos: {
         if (slotList.length === 0)
             return slotPosRC(0, 0)
@@ -142,7 +163,8 @@ Item {
         const spacing = Plasmoid.configuration.spacing
         const r = hexSize / 2
         const step = pointyTop ? (hexRatio * hexSize + spacing) : (1.5 * r + spacing)
-        return Qt.point(lastPos.x + step, lastPos.y)
+        const candidate = Qt.point(lastPos.x + step, lastPos.y)
+        return overlapsAnySlot(candidate) ? slotPos(slotList.length) : candidate
     }
 
     // Pulled out to the actual right edge of the widget whenever the
