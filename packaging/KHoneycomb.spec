@@ -69,19 +69,15 @@ fi
 %files
 %license LICENSE
 %doc README.md
-%dir %{_datadir}/plasma/plasmoids/de.agundur.khoneycomb
-%dir %{_datadir}/plasma/plasmoids/de.agundur.khoneycomb/contents
-%dir %{_datadir}/plasma/plasmoids/de.agundur.khoneycomb/contents/ui
-%dir %{_datadir}/plasma/plasmoids/de.agundur.khoneycomb/contents/config
-%dir %{_datadir}/plasma/plasmoids/de.agundur.khoneycomb/contents/shaders
-%{_datadir}/plasma/plasmoids/de.agundur.khoneycomb/metadata.json
-%{_datadir}/plasma/plasmoids/de.agundur.khoneycomb/contents/ui/main.qml
-%{_datadir}/plasma/plasmoids/de.agundur.khoneycomb/contents/ui/FullRepresentation.qml
-%{_datadir}/plasma/plasmoids/de.agundur.khoneycomb/contents/ui/configGeneral.qml
-%{_datadir}/plasma/plasmoids/de.agundur.khoneycomb/contents/config/main.xml
-%{_datadir}/plasma/plasmoids/de.agundur.khoneycomb/contents/config/config.qml
-%{_datadir}/plasma/plasmoids/de.agundur.khoneycomb/contents/shaders/bevel.frag
-%{_datadir}/plasma/plasmoids/de.agundur.khoneycomb/contents/shaders/bevel.frag.qsb
+# Recursive, matching CMakeLists.txt's own `install(DIRECTORY package/ ...)`
+# — that installs the whole package/ tree wholesale, so any file added
+# there (icons, a new compact representation, whatever comes next) is
+# covered automatically instead of needing a matching new line here every
+# time. Enumerating individual files was the actual cause of the first
+# OBS build failure: the app-icon feature added contents/icons/* without
+# anyone remembering to add it to this list too.
+%{_datadir}/plasma/plasmoids/de.agundur.khoneycomb/
+%{_datadir}/icons/hicolor/*/apps/khoneycomb.png
 %{_datadir}/locale/*/LC_MESSAGES/plasma_applet_de.agundur.khoneycomb.mo
 
 %changelog
