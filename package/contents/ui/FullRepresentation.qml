@@ -15,6 +15,7 @@ import org.kde.plasma.plasmoid
 import org.kde.plasma.plasma5support as Plasma5Support
 import org.kde.kirigami as Kirigami
 import org.kde.iconthemes as KIconThemes
+import org.kde.taskmanager as TaskManager
 
 Item {
     id: full
@@ -164,6 +165,38 @@ Item {
         engine: "executable"
         connectedSources: []
         onNewData: (sourceName, data) => disconnectSource(sourceName)
+    }
+
+    // Same model the real Task Manager applet uses — runs in-process with
+    // plasmashell, so it gets the privileged window list/activate access a
+    // plain external command (wmctrl, xdotool, ...) can't get under Wayland.
+    // No filters set -> unfiltered, matches windows on any desktop/screen/activity.
+    TaskManager.TasksModel {
+        id: tasksModel
+    }
+
+    // Trailing "&" always forces a fresh instance (bypasses matching).
+    // Otherwise: activate an existing window for this command if one is
+    // already open, else launch it. Matching is a lenient substring check
+    // against AppId (desktop-file id, e.g. "org.kde.dolphin" for exec
+    // "dolphin") — there's no exact exec<->AppId mapping to rely on.
+    function launchOrActivate(command) {
+        const trimmed = command.trim()
+        if (trimmed.endsWith("&")) {
+            executable.connectSource(command)
+            return
+        }
+        const execBase = trimmed.split(" ")[0].toLowerCase()
+        for (let i = 0; i < tasksModel.count; i++) {
+            const idx = tasksModel.index(i, 0)
+            const isWindow = tasksModel.data(idx, TaskManager.AbstractTasksModel.IsWindow)
+            const appId = tasksModel.data(idx, TaskManager.AbstractTasksModel.AppId) || ""
+            if (isWindow && appId.toLowerCase().includes(execBase)) {
+                tasksModel.requestActivate(idx)
+                return
+            }
+        }
+        executable.connectSource(command)
     }
 
     // Resolves a bare icon-theme name (e.g. "okular", as returned by
@@ -824,7 +857,7 @@ Item {
                         if (mouse.button === Qt.RightButton) {
                             full.openSlotEditor(slot.index)
                         } else if (slot.modelData.command) {
-                            executable.connectSource(slot.modelData.command)
+                            full.launchOrActivate(slot.modelData.command)
                         }
                     }
                 }
