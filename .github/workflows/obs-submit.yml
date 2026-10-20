@@ -154,7 +154,9 @@ jobs:
           TAG="${{ steps.ver.outputs.tag }}"
           gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 \
             || gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "$TAG" --generate-notes
-          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' \
-            | grep -E '^khoneycomb-.*\.rpm$' \
+          # jq emits no lines successfully when there are no old RPMs.
+          # grep would exit 1 here and abort a first upload under pipefail.
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets \
+            --jq '.assets[] | select(.name | test("^khoneycomb-.*\\.rpm$")) | .name' \
             | xargs -r -I{} gh release delete-asset "$TAG" "{}" --repo "$GITHUB_REPOSITORY" -y
           gh release upload "$TAG" rpms/*.rpm --repo "$GITHUB_REPOSITORY" --clobber
