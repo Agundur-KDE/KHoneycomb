@@ -1,3 +1,14 @@
+khoneycomb (0.3.0-1) unstable; urgency=medium
+
+  * Add portable per-widget configuration backups with bundled custom
+    icons and background images, validation and import confirmation.
+  * Add a dedicated Backup settings page and Python 3 runtime dependency.
+  * Fix theme icon selection on desktops without kiconfinder6.
+  * Activate existing application windows on repeated launches.
+  * Complete German, Spanish, French and Russian interface translations.
+
+ -- Agundur <info@agundur.de>  Tue, 20 Oct 2026 11:11:15 +0200
+
 khoneycomb (0.2.1-1) unstable; urgency=medium
 
   * Add compact (panel) representation.

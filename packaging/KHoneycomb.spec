@@ -3,7 +3,7 @@
 %endif
 
 Name:           khoneycomb
-Version:        0.2.0
+Version:        0.3.0
 Release:        1%{?dist}
 Summary:        KDE Plasma 6 application launcher widget, a honeycomb of hexagons
 
@@ -82,6 +82,13 @@ fi
 %{_datadir}/locale/*/LC_MESSAGES/plasma_applet_de.agundur.khoneycomb.mo
 
 %changelog
+* Tue Oct 20 2026 Alec <info@agundur.de> - 0.3.0
+- Portable widget backups with custom icons and background images
+- Dedicated Backup settings page and Python 3 runtime dependency
+- Fix theme icon selection without kiconfinder6
+- Activate existing application windows on repeated launches
+- Complete German, Spanish, French and Russian translations
+
 * Mon Jul 27 2026 Alec <info@agundur.de> - 0.2.0
 - First automated .deb/.rpm/.plasmoid release via GitHub Actions
 - Renamed the plasmoid from the internal working name KHiveLaunch to
