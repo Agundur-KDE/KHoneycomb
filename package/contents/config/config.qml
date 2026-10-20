@@ -13,4 +13,9 @@ ConfigModel {
         icon: "input-gaming"
         source: "configGeneral.qml"
     }
+    ConfigCategory {
+        name: i18nc("@title", "Backup")
+        icon: "document-save"
+        source: "configBackup.qml"
+    }
 }

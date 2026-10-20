@@ -21,6 +21,7 @@ BuildRequires:  kf6-ki18n-devel
 
 
 Requires:       plasma6-workspace
+Requires:       python3
 
 %description
 KHoneycomb fills one KDE Plasma 6 widget with a whole configurable grid

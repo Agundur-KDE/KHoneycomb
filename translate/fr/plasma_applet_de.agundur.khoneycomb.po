@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: plasma_applet_de.agundur.khoneycomb\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-01-01 00:00+0000\n"
-"PO-Revision-Date: 2026-07-27 00:00+0000\n"
+"PO-Revision-Date: 2026-10-20 00:00+0000\n"
 "Last-Translator: Agundur <info@agundur.de>\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -181,3 +181,54 @@ msgstr "Ajouter %1 emplacement(s)"
 #: package/contents/ui/configGeneral.qml:338
 msgid "Choose a background image"
 msgstr "Choisir une image de fond"
+
+msgid "Configuration backup"
+msgstr "Sauvegarde de la configuration"
+
+msgctxt "@title"
+msgid "Backup"
+msgstr "Sauvegarde"
+
+msgid "Export…"
+msgstr "Exporter…"
+
+msgid "Import…"
+msgstr "Importer…"
+
+msgid "Back up this widget's settings, icons and background image. Applications must be installed separately."
+msgstr "Sauvegardez les paramètres, les icônes et l’image de fond de ce widget. Les applications doivent être installées séparément."
+
+msgid "Export KHoneycomb configuration"
+msgstr "Exporter la configuration de KHoneycomb"
+
+msgid "Import KHoneycomb configuration"
+msgstr "Importer la configuration de KHoneycomb"
+
+msgid "KHoneycomb backup (*.khoneycomb)"
+msgstr "Sauvegarde KHoneycomb (*.khoneycomb)"
+
+msgid "Replace configuration?"
+msgstr "Remplacer la configuration ?"
+
+msgid "Replace the current configuration with %1 hexagon(s) with the backup containing %2 hexagon(s)? Only import backups you trust: they contain application launch commands. Nothing is launched during import."
+msgstr "Remplacer la configuration actuelle de %1 hexagone(s) par la sauvegarde contenant %2 hexagone(s) ? N’importez que des sauvegardes de confiance : elles contiennent des commandes de lancement d’applications. Aucune commande n’est exécutée lors de l’importation."
+
+msgid "Configuration loaded. Click Apply or OK to keep it."
+msgstr "Configuration chargée. Cliquez sur Appliquer ou sur OK pour la conserver."
+
+msgid "Configuration exported successfully."
+msgstr "La configuration a été exportée."
+
+msgid "The configuration is too large to export."
+msgstr "La configuration est trop volumineuse pour être exportée."
+
+msgid "Backup failed: %1"
+msgstr "Échec de la sauvegarde : %1"
+
+msgid "Could not start Python 3."
+msgstr "Impossible de démarrer Python 3."
+
+#: package/contents/config/config.qml:12
+msgctxt "@title"
+msgid "General"
+msgstr "Général"

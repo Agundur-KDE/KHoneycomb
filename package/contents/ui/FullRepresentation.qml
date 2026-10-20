@@ -199,23 +199,6 @@ Item {
         executable.connectSource(command)
     }
 
-    // Resolves a bare icon-theme name (e.g. "okular", as returned by
-    // KIconThemes.IconDialog for a theme pick rather than a custom file)
-    // to an actual file path via kiconfinder6 — the same lookup KDE's own
-    // apps use, more reliable than guessing at a QML image-provider URL
-    // scheme (image://icontheme/... confirmed NOT to resolve here).
-    Plasma5Support.DataSource {
-        id: iconResolver
-        engine: "executable"
-        connectedSources: []
-        onNewData: (sourceName, data) => {
-            disconnectSource(sourceName)
-            const out = (data["stdout"] || "").trim()
-            if (out)
-                slotEditImage.text = out
-        }
-    }
-
     // Right-click editor for a single slot's icon/command — a structural
     // edit (removing/reordering slots) stays in the full config dialog,
     // this is just the quick "change what this one cell launches" path.
@@ -417,17 +400,9 @@ Item {
         // the old plain FileDialog handled plus proper icon browsing.
         KIconThemes.IconDialog {
             id: slotEditIconDialog
-            // Picking a theme icon (as opposed to "Browse…" for a custom
-            // file) returns a bare name like "okular", not a path — Image
-            // can't load that directly, needs resolving to a real file
-            // first (see iconResolver above). A custom-file pick already
-            // comes back as an absolute path, nothing to resolve.
-            onIconNameChanged: {
-                if (iconName.startsWith("/"))
-                    slotEditImage.text = iconName
-                else
-                    iconResolver.connectSource("kiconfinder6 '" + iconName + "'")
-            }
+            // Keep theme names as names. kiconfinder6 is a development
+            // utility and is not installed on ordinary Plasma desktops.
+            onIconNameChanged: (iconName) => slotEditImage.text = iconName
         }
 
         ColorDialog {
@@ -694,14 +669,10 @@ Item {
                                 clip: true
                                 visible: slot.modelData.image !== ""
 
-                                Image {
+                                SlotIcon {
                                     id: icon
                                     anchors.fill: parent
-                                    fillMode: Image.PreserveAspectCrop
                                     source: slot.modelData.image || ""
-                                    smooth: true
-                                    mipmap: true
-                                    asynchronous: true
                                     scale: (slot.modelData.zoom || 100) / 100
                                     // without this, SVG icons rasterize at a
                                     // small default size and get blurrily

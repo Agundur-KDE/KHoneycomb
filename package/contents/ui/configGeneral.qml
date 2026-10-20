@@ -9,25 +9,10 @@ import QtCore
 import QtQuick.Controls as QtControls
 import QtQuick.Dialogs
 import QtQuick.Layouts
-import org.kde.kcmutils as KCM
 import org.kde.kirigami as Kirigami
 
-KCM.SimpleKCM {
+SettingsPage {
     id: page
-
-    property int cfg_hexSize
-    property int cfg_columns
-    property int cfg_spacing
-    property string cfg_orientation
-    property color cfg_placeholderColor
-    property string cfg_backgroundImage
-    property string cfg_backgroundFillMode
-    property int cfg_backgroundDim
-    property int cfg_bevelStrength
-    property int cfg_gridPadding
-    property color cfg_textColor
-    property int cfg_textSize
-    property string cfg_slots
 
     // Slot list is edited via this model, then serialized back to
     // cfg_slots (JSON) on every change — cfg_slots itself is only ever

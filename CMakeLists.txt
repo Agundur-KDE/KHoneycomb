@@ -17,6 +17,13 @@ find_package(KF6 ${KF6_MIN_VERSION} REQUIRED COMPONENTS
 set(PLASMOID_ID de.agundur.khoneycomb)
 
 enable_testing()
+option(KHONEYCOMB_QML_TESTS "Build the QML settings integration tests" OFF)
+if(KHONEYCOMB_QML_TESTS)
+    add_subdirectory(tests)
+endif()
+add_test(NAME config-backup
+    COMMAND python3 -B ${CMAKE_SOURCE_DIR}/tests/test_backup.py
+)
 add_test(NAME validate-metadata
     COMMAND python3 ${CMAKE_SOURCE_DIR}/scripts/validate-metadata.py
                     ${CMAKE_SOURCE_DIR}/package/metadata.json
