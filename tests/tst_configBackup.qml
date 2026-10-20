@@ -8,8 +8,8 @@ TestCase {
     width: 900
     height: 800
 
-    function createSettings() {
-        const component = Qt.createComponent("../package/contents/ui/configGeneral.qml")
+    function createSettings(source = "configBackup.qml") {
+        const component = Qt.createComponent("../package/contents/ui/" + source)
         verify(component.status === Component.Ready, component.errorString())
         return createTemporaryObject(component, testCase, {
             width: 900, height: 800,
@@ -34,7 +34,6 @@ TestCase {
 
         page.cfg_hexSize = 120
         page.cfg_slots = "[]"
-        page.load()
         page.pendingBackup = path
         page.runBackup("inspect", path)
         tryCompare(page, "backupBusy", false, 10000)
@@ -71,5 +70,43 @@ TestCase {
     function test_shell_quoting() {
         const page = createSettings()
         compare(page.shellQuote("a'b $(touch no)"), "'a'\\''b $(touch no)'")
+    }
+
+    function test_separate_category_and_shared_configuration() {
+        const component = Qt.createComponent("../package/contents/config/config.qml")
+        verify(component.status === Component.Ready, component.errorString())
+        const categories = createTemporaryObject(component, testCase)
+        compare(categories.count, 2)
+        compare(categories.get(1).source, "configBackup.qml")
+
+        const general = createSettings("configGeneral.qml")
+        const backup = createSettings()
+        verify(general.backupBusy === undefined)
+        // Plasma's Apply logic uses hasOwnProperty, including inherited QML properties.
+        for (const key of backup.backupKeys) {
+            verify(general.hasOwnProperty("cfg_" + key), key)
+            verify(backup.hasOwnProperty("cfg_" + key), key)
+            verify(general.hasOwnProperty("cfg_" + key + "Default"), key)
+        }
+    }
+
+    function test_theme_icon_export_and_import() {
+        const page = createSettings()
+        page.cfg_slots = '[{"image":"document-open","command":"test-command","zoom":100,"color":""}]'
+        const path = "file://" + backupTestDirectory + "/theme.khoneycomb"
+        page.exportConfiguration(path)
+        tryCompare(page, "backupBusy", false, 10000)
+        verify(!page.backupError, page.backupMessage)
+        page.cfg_slots = "[]"
+        page.pendingBackup = path
+        page.runBackup("inspect", path)
+        tryCompare(page, "backupBusy", false, 10000)
+        verify(!page.backupError, page.backupMessage)
+        const confirmation = findChild(page, "importConfirmation")
+        tryCompare(confirmation, "visible", true)
+        confirmation.accept()
+        tryCompare(page, "backupBusy", false, 10000)
+        verify(!page.backupError, page.backupMessage)
+        compare(JSON.parse(page.cfg_slots)[0].image, "document-open")
     }
 }

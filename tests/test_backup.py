@@ -81,6 +81,19 @@ class BackupTest(unittest.TestCase):
         backup.export_backup(self.path.as_uri(), self.settings)
         self.assertEqual(backup.inspect_backup(self.path.as_uri())["count"], 0)
 
+    def test_theme_names_roundtrip_alongside_bundled_files(self):
+        self.settings["slots"][0]["image"] = "org.kde.kate"
+        backup.export_backup(self.path.as_uri(), self.settings)
+        preview = backup.inspect_backup(self.path.as_uri())
+        imported = backup.import_backup(self.path.as_uri(), preview["digest"])["settings"]
+        self.assertEqual(imported["slots"][0]["image"], "org.kde.kate")
+        self.assertTrue(Path(imported["backgroundImage"]).is_file())
+
+    def test_theme_name_is_not_allowed_as_background(self):
+        self.settings["backgroundImage"] = "org.kde.kate"
+        with self.assertRaisesRegex(ValueError, "absolute file path"):
+            backup.export_backup(self.path.as_uri(), self.settings)
+
     def test_rejects_changed_backup_after_confirmation(self):
         backup.export_backup(self.path.as_uri(), self.settings)
         preview = backup.inspect_backup(self.path.as_uri())

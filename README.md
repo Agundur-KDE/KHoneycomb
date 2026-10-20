@@ -82,10 +82,11 @@ strength, and grid padding.
 
 ## Back up or move a widget
 
-Open KHoneycomb's settings and scroll to **Configuration backup**. **Export…**
+Open KHoneycomb's settings and select **Backup** in the sidebar. **Export…**
 saves the current settings, tile order, commands, colors, zoom, icon files and
 background image in one `.khoneycomb` file. This also includes pending edits in
-the settings dialog. All referenced images must be readable local files.
+the settings dialog. Custom images must be readable local files. Theme icons
+are saved by name and use the destination desktop's icon theme.
 
 On another widget or computer, choose **Import…**, select the backup and confirm
 replacement. Review the imported settings, then click **Apply** or **OK**.

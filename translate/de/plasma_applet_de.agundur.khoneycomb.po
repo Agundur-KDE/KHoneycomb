@@ -185,6 +185,10 @@ msgstr "Hintergrundbild auswählen"
 msgid "Configuration backup"
 msgstr "Konfiguration sichern"
 
+msgctxt "@title"
+msgid "Backup"
+msgstr "Sicherung"
+
 msgid "Export…"
 msgstr "Exportieren …"
 

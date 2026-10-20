@@ -68,6 +68,11 @@ def images(settings):
         yield slot, "image"
 
 
+def theme_icon(owner, key):
+    # SlotIcon renders bare theme names in-process. Backgrounds remain files.
+    return key == "image" and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.+\-]*", owner[key])
+
+
 def local_path(value):
     url = urlsplit(value)
     if url.scheme:
@@ -94,7 +99,7 @@ def export_backup(destination, settings):
     settings = copy.deepcopy(validate(settings))
     assets = {}
     for owner, key in images(settings):
-        if not owner[key]:
+        if not owner[key] or theme_icon(owner, key):
             continue
         path = local_path(owner[key])
         suffix = path.suffix.lower()
@@ -143,7 +148,7 @@ def read_backup(source):
         assets = {}
         for owner, key in images(settings):
             name = owner[key]
-            if not name:
+            if not name or theme_icon(owner, key):
                 continue
             require(ASSET.fullmatch(name) and name in names, "Missing or invalid image asset.")
             if name not in assets:
@@ -168,7 +173,7 @@ def import_backup(source, expected_digest):
     for name, data in assets.items():
         atomic_write(directory / Path(name).name, data)
     for owner, key in images(settings):
-        if owner[key]:
+        if owner[key] and not theme_icon(owner, key):
             owner[key] = str(directory / Path(owner[key]).name)
     return {"settings": settings}
 
