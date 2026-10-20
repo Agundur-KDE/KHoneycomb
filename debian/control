@@ -13,7 +13,7 @@ Homepage: https://github.com/Agundur-KDE/KHoneycomb
 
 Package: khoneycomb
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, python3
 Description: KDE Plasma 6 application launcher widget, a honeycomb of hexagons
  KHoneycomb fills one widget with a whole configurable grid of hexagon
  launcher tiles, tiled edge-to-edge. Adjustable neumorphic 3D bevel,

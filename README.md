@@ -27,6 +27,8 @@ screenshot.
 - Per-tile control: icon image, launch command, zoom to crop into icons
   with a lot of transparent padding, custom tile color
 - Grid padding and hover tooltips round out the polish
+- Export and import individual widget configurations, including icons and
+  background images, from the settings dialog
 
 ## Languages
 
@@ -77,6 +79,32 @@ cmake -B build && cmake --build build && sudo cmake --install build
 Right-click a hexagon → Configure to add slots (icon image + launch
 command), or use the full config dialog for background image, bevel
 strength, and grid padding.
+
+## Back up or move a widget
+
+Open KHoneycomb's settings and scroll to **Configuration backup**. **Export…**
+saves the current settings, tile order, commands, colors, zoom, icon files and
+background image in one `.khoneycomb` file. This also includes pending edits in
+the settings dialog. All referenced images must be readable local files.
+
+On another widget or computer, choose **Import…**, select the backup and confirm
+replacement. Review the imported settings, then click **Apply** or **OK**.
+Cancel leaves the widget's configuration unchanged. Import never launches the
+stored commands; use backups from sources you trust.
+
+Python 3 is required for backup operations (also with the quick install).
+Applications must already be installed on the destination computer; commands
+with machine-specific paths may need adjusting. Widget position and outer size
+remain managed by Plasma and are not included. Images are copied to
+`$XDG_DATA_HOME/khoneycomb/imported/` (normally
+`~/.local/share/khoneycomb/imported/`); these copies remain if the settings dialog
+is cancelled so other widget instances can continue to use them. Identical images
+are reused. Image files are copied as-is; external resources linked from an SVG
+are not bundled.
+
+Backups support up to 500 tiles, 16 MiB per image and 64 MiB of image data.
+Missing images, invalid settings or unsupported backup versions produce an error
+without replacing the current configuration.
 
 ## Show us your rice
 
