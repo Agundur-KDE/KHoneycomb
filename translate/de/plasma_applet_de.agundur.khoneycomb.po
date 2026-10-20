@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: plasma_applet_de.agundur.khoneycomb\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-01-01 00:00+0000\n"
-"PO-Revision-Date: 2026-07-27 00:00+0000\n"
+"PO-Revision-Date: 2026-10-20 00:00+0000\n"
 "Last-Translator: Agundur <info@agundur.de>\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -227,3 +227,8 @@ msgstr "Sicherung fehlgeschlagen: %1"
 
 msgid "Could not start Python 3."
 msgstr "Python 3 konnte nicht gestartet werden."
+
+#: package/contents/config/config.qml:12
+msgctxt "@title"
+msgid "General"
+msgstr "Allgemein"
