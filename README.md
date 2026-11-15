@@ -51,7 +51,7 @@ Then right-click your desktop → **Enter Edit Mode** → **Add or Manage
 Widgets...** (on a panel it's a direct context-menu entry, no edit mode
 needed), search for "KHoneycomb", and drag it into place.
 
-### openSUSE Tumbleweed / Leap 16.0
+### openSUSE Tumbleweed / Leap 16.1 / Leap 16.0 / Slowroll
 
 Choose the repository for your installed distribution. Add it only once; the same repository provides the other Agundur packages too.
 
@@ -63,10 +63,26 @@ sudo zypper --gpg-auto-import-keys ref
 sudo zypper in khoneycomb
 ```
 
+**openSUSE Leap 16.1:**
+
+```bash
+sudo zypper ar -f https://download.opensuse.org/repositories/home:/Agundur/16.1/home:Agundur.repo
+sudo zypper --gpg-auto-import-keys ref
+sudo zypper in khoneycomb
+```
+
 **openSUSE Leap 16.0:**
 
 ```bash
 sudo zypper ar -f https://download.opensuse.org/repositories/home:/Agundur/16.0/home:Agundur.repo
+sudo zypper --gpg-auto-import-keys ref
+sudo zypper in khoneycomb
+```
+
+**openSUSE Slowroll (x86_64):**
+
+```bash
+sudo zypper ar -f https://download.opensuse.org/repositories/home:/Agundur/openSUSE_Slowroll/home:Agundur.repo
 sudo zypper --gpg-auto-import-keys ref
 sudo zypper in khoneycomb
 ```
